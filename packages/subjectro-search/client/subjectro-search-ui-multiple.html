@@ -1,0 +1,14 @@
+<template name="subjectroSearchMultiple">
+  <div class="subjectroSearchMultiple">
+    <div class="ui huge icon input subjectroSearchMultipleInput">
+      <input type="text" placeholder="...">
+      <i class="search icon"></i>
+    </div>
+    <select name="subjects" multiple="" class="ui fluid dropdown subjectroSearchMultipleDrop">
+      <option value="">...</option>
+      {{#each subjects}}
+        <option id="subjectroSearchMultipleOption_{{_id}}" value="{{_id}}">{{subject}}</option>
+      {{/each}}
+    </select>
+  </div>
+</template>

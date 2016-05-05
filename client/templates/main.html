@@ -1,0 +1,24 @@
+<template name="viewer">
+  <table>
+    <tr>
+      <th>mathjax</th>
+      {{#each header}}
+        <th>{{this}}</th>
+      {{/each}}
+    </tr>
+    {{#each formula}}
+      <tr id="tr_{{_id}}">
+        <td>`{{mathjax}}`</td>
+        {{#each header}}
+          <td>
+            <input type="text" id="{{../_id}}" value="{{value .. this}}" style="width: {{#if small this}}80{{else}}250{{/if}}px;">
+          </td>
+        {{/each}}
+      </tr>
+    {{/each}}
+  </table>
+</template>
+
+<template name="upload">
+  <button id="upload">upload</button>
+</template>

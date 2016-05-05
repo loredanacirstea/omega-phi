@@ -1,0 +1,10 @@
+<template name="subjectroSearchModal">
+  <div class="ui modal subjectroSearchModal">
+    <div class="content">
+      <button id='saveSearchButton'>save</button>
+      {{> Template.dynamic template=search data=searchdata}}
+      <input type="hidden" class="subjectroSearchModalHidden">
+      <div id="subjectroSearchModalRes"></div>
+    </div>
+  </div>
+</template>

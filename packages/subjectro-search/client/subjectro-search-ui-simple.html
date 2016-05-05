@@ -1,0 +1,21 @@
+<template name="subjectroSearch">
+  <div class="subjectroSearch">
+    {{#if search}}
+      <div class="ui huge icon input subjectroSearchInput">
+        <input type="text" placeholder="...">
+        <i class="search icon"></i>
+      </div>
+    {{/if}}
+    <div class="ui selection dropdown subjectroSearchDrop {{#if multiple}}multiple{{/if}}">
+      <input type="hidden" name="subjectroSearchHidden">
+      <i class="dropdown icon"></i>
+      <div class="default text">...</div>
+      <div class="menu">
+        {{#each subjects}}
+          <div class="item" data-value="{{_id}}" data-uuid="{{uuid}}" data-id="subjectroSearchOption_{{_id}}" data-name="{{subject}}" data-lang="{{lang}}">{{subject}}
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</template>

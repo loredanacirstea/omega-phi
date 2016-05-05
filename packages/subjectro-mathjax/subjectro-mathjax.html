@@ -1,0 +1,24 @@
+<template name='subjectroMathjaxEditor'>
+  <button id='subjectroMathjaxEditorSave'>save</button>
+  <div id="all">
+    <textarea id="editor1" class="tex2jax_ignore asciimath2jax_ignore"></textarea>
+    <textarea id="editor2" class="tex2jax_ignore asciimath2jax_ignore"></textarea>
+    <div class="previews">
+      <div id="preview1"></div>
+      =
+      <div id="preview2"></div>
+    </div>
+    <input type="hidden" id="mathjaxEditorHiddenIni">
+    <input type="hidden" id="mathjaxEditorHidden">
+  </div>
+  <div id="keys"></div>
+</template>
+
+
+<template name='subjectroMathjaxEditorModal'>
+  <div class="ui large modal subjectroMathjaxEditorModal" style="min-height: 700px;min-width:1400px">
+    <div class="content">
+      {{> subjectroMathjaxEditor}}
+    </div>
+  </div>
+</template>

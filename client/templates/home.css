@@ -1,0 +1,23 @@
+.flex {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.link {
+  color: "#0B7FFF" !important;
+}
+
+.omegaTitle {
+  height: 100%;
+}
+
+.variableInput, .formulaResult {
+  width: 80% !important;
+}
+
+.logo {
+  width: 20%;
+  margin-left: 40%;
+}

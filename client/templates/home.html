@@ -1,0 +1,140 @@
+
+<head>
+  <meta charset="utf-8">
+  <title>Omega</title>
+
+  <!-- Sets initial viewport load and disables zooming  -->
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+
+  <!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+</head>
+
+
+
+<template name="layout1">
+  {{> Template.dynamic template=top}}
+  {{> Template.dynamic template=bottom}}
+  {{> Template.dynamic template=main}}
+</template>
+
+<template name="titleBar">
+  <header class="bar bar-nav">
+    <a href="/browse/{{uuid}}" data-ignore="push"><h1 class="title omegaTitle"><img src="/omegaTitle.svg" class="omegaTitle"></h1></a>
+  </header>
+</template>
+
+<template name="menuBar">
+  <nav class="bar bar-tab">
+    <a class="tab-item" href="/" data-ignore="push">
+      <span class="icon icon-list"></span>
+    </a>
+    <a class="tab-item" href="/search" data-ignore="push">
+      <span class="icon icon-search"></span>
+    </a>
+    <a class="tab-item" href="/settings" data-ignore="push">
+      <span class="icon icon-gear"></span>
+    </a>
+    <a class="tab-item" href="/info" data-ignore="push">
+      <span class="icon icon-info"></span>
+    </a>
+  </nav>
+</template>
+
+<template name="formulaDetails">
+  <div class="content">
+    {{#with formula}}
+      <ul class="table-view">
+        <li class="table-view-cell flex">
+            {{#each path}}
+              <a href="/browse/{{uuid}}" data-ignore="push"><strong>{{firstUpper subject}}</strong></a> &nbsp;>&nbsp;
+            {{/each}}
+            <a href="/browse/{{uuid}}" data-ignore="push"><strong>{{description}}</strong></a>
+            <button class="btn"><a href="{{wiki}}" data-ignore="push" target="_blank">wiki</a></button>
+        </li>
+
+        {{#each formulas}}
+          <li class="table-view-cell">
+            <a class="navigate-right" href="/browse/{{uuid}}" data-ignore="push">
+              {{#if vars}}
+                <span class="icon icon-star-filled"></span>
+              {{/if}}
+              {{firstUpper subject}}
+              <!--&nbsp;&nbsp;
+              {{#if mfr}}{{#if mfr.subject}}`{{{mfr.subject}}}`{{/if}}{{/if}}-->
+            </a>
+          </li>
+        {{/each}}
+
+        {{#if mathjax}}
+          <li class="table-view-cell">`{{{mathjax}}}`</li>
+        {{/if}}
+
+        {{#if variables}}
+          {{#each variable}}
+            <li class="table-view-cell">
+              <a data-ignore="push" href="/browse/{{uuid}}">{{firstUpper subject}}</a>
+              <span>{{#if msy}}`{{{msy.subject}}}`{{/if}}</span>
+              <input type="text" placeholder="..." class="variableInput" data-var="{{#if msy}}{{msy.subject}}{{/if}}">
+              <span>{{#if unit}}`{{{unit.subject}}}`{{/if}}</span>
+            </li>
+          {{/each}}
+          <li class="table-view-cell">
+            <span>`{{{msy}}}`</span>
+            <input type="text" readonly="true" class="formulaResult">
+            <span>`{{{unit}}}`</span>
+          </li>
+        {{/if}}
+
+      </ul>
+    {{/with}}
+  </div>
+</template>
+
+<template name="searchFormula">
+  <div class="content">
+    <input type="text" placeholder="..." class="searchFormula">
+    <ul class="table-view">
+      {{#each result}}
+        <li class="table-view-cell">
+          <a class="navigate-right" data-ignore="push" href="/browse/{{uuid}}">
+            {{firstUpper subject}}
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</template>
+
+
+
+<template name="settings">
+  <div class="content">
+    {{> langChooser}}
+  </div>
+</template>
+
+<template name="langChooser">
+  <div>
+    <select id="langChooser">
+      <option value="en">English</option>
+      <option value="ro">Romana</option>
+    </select>
+  </div>
+</template>
+
+<template name="info">
+  <div class="content">
+    <div class="content-padded">
+      {{#if en}}
+        <p>Short <a data-ignore="push" target="_blank" href="https://www.youtube.com/watch?v=OUDcfJwGIgA">tutorial video</a></p>
+        <p>Created by <a data-ignore="push" target="_blank" href="http://www.kuip.co.uk/">Kuip</a>.</p>
+      {{else}}
+        <p>Scurt<a data-ignore="push" target="_blank" href="https://www.youtube.com/watch?v=OUDcfJwGIgA">video explicativ</a></p>
+        <p>Creat de <a data-ignore="push" target="_blank" href="http://www.kuip.co.uk/">Kuip</a>.</p>
+      {{/if}}
+      <!--<a data-ignore="push" target="_blank" href="http://www.kuip.co.uk/"><img src="/Kuip-logo.svg" class="logo"></a>-->
+    </div>
+  </div>
+</template>
