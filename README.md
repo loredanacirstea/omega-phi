@@ -4,6 +4,7 @@ OmegaPhi
 Physics formulas - browsing, searching, problem solver
 
 Web App: http://orobo.go.ro:5500
+Android App: https://play.google.com/store/apps/details?id=ro.oroboro.omegaphi
 
 1 minute video demo:
 https://www.youtube.com/watch?v=OUDcfJwGIgA
