@@ -31,9 +31,7 @@ Data, represented by the physics formulas is under the following licenses:
 
 ODbL : http://opendatacommons.org/licenses/odbl/
 
-DbCL : http://opendatacommons.org/licenses/dbcl/1-0/
-
-see [ODbL.txt](/ODbL.txt) and [DbCL.txt](/DbCL.txt)
+see [ODbL.txt](/ODbL.txt)
 
 
 Want to help?
