@@ -49,3 +49,6 @@ chuangbo:marked
 ecwyne:mathjs
 
 #arboleya:electrify
+
+# android:
+#meteor add cordova:org.apache.cordova.inappbrowser@1.4.0

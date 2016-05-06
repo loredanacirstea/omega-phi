@@ -150,7 +150,6 @@ insertRelation = function(uuid1, uuid2, relation) {
   });
 }
 
-var maxFormCount = 25
 var recurs = 0
 separateCats = function() {
   var subcats = Relation.find({uuid2: physicsUuid, relation: 1}).fetch()

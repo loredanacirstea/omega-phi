@@ -16,13 +16,10 @@ Template.layout1.onCreated(function() {
   $('head').append('<link rel="stylesheet" type="text/css" href="/ratchet-v2.0.2/css/ratchet.min.css">')
   $('head').append('<link rel="stylesheet" type="text/css" href="/ratchet-v2.0.2/css/ratchet-theme-ios.min.css">')
   //$('head').append('<link rel="stylesheet" type="text/css" href="/ratchet-v2.0.2/css/ratchet-theme-android.min.css">')
-  //$('head').append('<script src="/ratchet-v2.0.2/js/ratchet.min.js"></script>');
-  $('head').append('<script src="/ratchet-v2.0.2/js/ratchet2.js"></script>');
-
+  $('head').append('<script src="/ratchet-v2.0.2/js/ratchet.min.js"></script>');
   $('head').append('<script src="/ASCIIMathML.js"></script>');
-  $('head').append('<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_SVG"></script>');
+  $('head').append('<script src="/MathJax/MathJax.js?config=TeX-MML-AM_SVG"></script>');
   $('head').append("<script type='text/x-mathjax-config'>MathJax.Hub.Config({asciimath2jax: {delimiters: [['`','`']]}});</script>");
-
 })
 
 Template.langChooser.onRendered(function() {
@@ -192,15 +189,14 @@ Template.formulaDetails.events({
 Template.searchFormula.onCreated(function() {
   this.result = new ReactiveVar([])
   this.letters = new ReactiveVar('')
-  var url = '/api/subject/search?'
+  var url = serverUrl + '/api/subject/search?'
 
   var self = this
   this.autorun(function() {
     var text = self.letters.get()
-    console.log(text)
     var lang = sysLang.get()
     if(lang && text && text.length > 2)
-      $.getJSON(url + 'lang=' + lang + '&text=' + text, function(data){
+      $.getJSON(url + 'limit=' + maxFormCount*2 + '&lang=' + lang + '&text=' + text, function(data){
         self.result.set(data)
       })
     else
@@ -215,15 +211,9 @@ Template.searchFormula.helpers({
 })
 
 Template.searchFormula.events({
-  'keypress .searchFormula': function(e, templ) {
-    var t = templ.$(e.currentTarget)
-    templ.letters.set(t.val()+ String.fromCharCode(e.keyCode))
-  },
   'keyup .searchFormula': function(e, templ) {
-    if(e.keyCode == '8') {
-      var t = templ.$(e.currentTarget)
-      templ.letters.set(t.val())
-    }
+    var t = templ.$(e.currentTarget)
+    templ.letters.set(t.val())
   }
 })
 

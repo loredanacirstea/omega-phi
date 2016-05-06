@@ -16,7 +16,7 @@ console.log(JSON.stringify(params))
   var text = params.query.text, query = {}
 
   if(params.query.lang)
-    query.lang = params.query.lang
+    query.lang = {$in: params.query.lang.split(',')}
 
   var opt = {}
   if(params.query.skip)
