@@ -45,5 +45,6 @@ Plans
 ----
 
 Code-wise: app will be re-written to use React instead of Blaze
+
 Data-wise: we plan on having a version with formula editing capabilities, so anyone can contribute.
 
