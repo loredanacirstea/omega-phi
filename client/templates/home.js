@@ -38,6 +38,21 @@ Template.titleBar.helpers({
   }
 })
 
+var subsOpt = {
+    cacheLimit: 500,
+    expireIn: 20000 //minutes
+}
+ConceptSubs = new SubsManager(subsOpt);
+PathSubs = new SubsManager(subsOpt);
+KidsSubs = new SubsManager(subsOpt);
+VarsSubs = new SubsManager(subsOpt);
+allSubsReady = new ReactiveVar()
+Tracker.autorun(function() {
+  if(ConceptSubs.ready() && PathSubs.ready() && KidsSubs.ready() && VarsSubs.ready())
+    allSubsReady.set(true)
+  else
+    allSubsReady.set()
+})
 
 Template.formulaDetails.onCreated(function() {
   var self = this
@@ -49,20 +64,25 @@ Template.formulaDetails.onCreated(function() {
     if(!uuid || !lang)
       return
     //console.log('subscribe')
-    self.conceptSub = self.subscribe('concept', {uuid: uuid})
-    self.pathSub = self.subscribe('path', uuid, lang)
-    self.kidsSub = self.subscribe('kids', uuid, ['msy', 'mfr', lang], {limit: 50})
-    self.varsSub = self.subscribe('vars', uuid, ['msy', 'mfr', lang])
+    //self.conceptSub = self.subscribe('concept', {uuid: uuid})
+    //self.pathSub = self.subscribe('path', uuid, lang)
+    //self.kidsSub = self.subscribe('kids', uuid, ['msy', 'mfr', lang], {limit: 50})
+    //self.varsSub = self.subscribe('vars', uuid, ['msy', 'mfr', lang])
+    self.conceptSub = ConceptSubs.subscribe('concept', {uuid: uuid})
+    self.pathSub = PathSubs.subscribe('path', uuid, lang)
+    self.kidsSub = KidsSubs.subscribe('kids', uuid, ['msy', 'mfr', lang], {limit: 50})
+    self.varsSub = VarsSubs.subscribe('vars', uuid, ['msy', 'mfr', lang])
   })
 })
 
 Template.formulaDetails.onRendered(function() {
   this.autorun(function() {
-    if(Template.instance().subscriptionsReady())
+    //if(Template.instance().subscriptionsReady())
+    if(allSubsReady.get())
       Meteor.setTimeout(function() {
         if(typeof MathJax != 'undefined')
-        MathJax.Hub.Typeset();
-      }, 1000)
+          MathJax.Hub.Typeset();
+      }, 500)
   })
 })
 
@@ -93,6 +113,11 @@ Template.formulaDetails.helpers({
     return obj
   },
   mathjax: function() {
+    if(this.msy)
+      Meteor.setTimeout(function() {
+        if(typeof MathJax != 'undefined')
+          MathJax.Hub.Typeset();
+      }, 1000)
     return this.msy ? (this.msy + (this.mfr ? (' = ' + this.mfr) : '')) : null;
   },
   description: function() {
@@ -220,5 +245,8 @@ Template.searchFormula.events({
 Template.info.helpers({
   en: function() {
     return sysLang.get() == 'en'
+  },
+  version: function() {
+    return OPversion
   }
 })
