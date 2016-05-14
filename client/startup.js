@@ -52,6 +52,7 @@ Tracker.autorun(function() {
     allSubsReady.set()
 })
 
+var userSub
 Tracker.autorun(function() {
   var userId = Meteor.userId()
   if(userId)
