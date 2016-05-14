@@ -1,0 +1,125 @@
+<template name="editFormula">
+  <div class="content">
+    <ul class="table-view">
+      <li class="table-view-divider">Part Of</li>
+      {{#each partof}}
+        <li class="table-view-cell">
+          {{subject}}
+          <button class="btn"><span class="icon icon-close buttonIcon"></span></button>
+        </li>
+      {{/each}}
+      <li class="table-view-cell">
+        {{> searchFormula2}}
+      </li>
+      <li class="table-view-divider">Formula</li>
+        {{#with formulaSubject}}
+          <li class="table-view-cell formulaSubject">
+          <span class="formulaSubjectSpan subjectroMathjaxEditor" data-msy="{{msy.subject}}" data-msyid="{{msy._id}}" data-mfr="{{mfr.subject}}" data-mfrid="{{mfr._id}}"></span>
+              {{#if formulaEditor}}
+                <button class="btn closeFEditor"><span class="icon icon-close buttonIcon"></span></button>
+              {{else}}
+                <button class="btn openFEditor"><span class="icon icon-edit buttonIcon"></span></button>
+              {{/if}}
+          </li>
+          {{#if formulaEditor}}
+            <li class="table-view-cell">
+              {{> formulaEditorTempl msy=msy mfr=mfr templ=templinst}}
+            </li>
+          {{/if}}
+        {{/with}}
+      
+      <li class="table-view-divider">Unit</li>
+      {{#with unit}}
+        <li class="table-view-cell unitSubject" data-uuid="{{uuid}}">`{{{subject}}}`</li>
+      {{/with}}
+      <li class="table-view-cell">
+        {{> searchFormula2}}
+      </li>
+      <li class="table-view-divider">Variables</li>
+      {{#each variables}}
+        <li class="table-view-cell">
+          {{subject}}
+          <a href="/edit/{{uuid}}" data-ignore="push" class="btn" style="right:65px !important;"><span class="icon icon-edit buttonIcon"></span></a>
+          <button class="btn"><span class="icon icon-close buttonIcon"></span></button>
+        </li>
+      {{/each}}
+      <li class="table-view-cell">
+        {{> searchFormula2}}
+      </li>
+      <li class="table-view-divider">En</li>
+      <li class="table-view-cell">
+        {{#with enSubject}}
+          <input type="text" placeholder="..." class="enSubject" value="{{subject}}" data-id="{{_id}}">
+        {{/with}}
+      </li>
+      <li class="table-view-divider">Ro</li>
+      <li class="table-view-cell">
+        {{#with roSubject}}
+          <input type="text" placeholder="..." class="roSubject" value="{{subject}}" data-id="{{_id}}">
+        {{/with}}
+      </li>
+      <li class="table-view-divider">Wiki</li>
+      <li class="table-view-cell">
+        {{#with wikiSubject}}
+          <input type="text" placeholder="..." class="wikiSubject" value="{{subject}}" data-id="{{_id}}">
+        {{/with}}
+      </li>
+    </ul>
+    <div class="card">
+      <button class="btn btn-primary btn-block saveConcept"><span class="icon icon-check" style="font-size:30px !important;"></span></button>
+      <br>
+      <button class="btn btn-negative btn-block resetConcept"><span class="icon icon-refresh" style="font-size:30px !important;"></span></button>
+    </div>
+
+    <ul class="table-view">
+      <li class="table-view-cell flex">
+          {{#each path}}
+            <a href="/edit/{{uuid}}" data-ignore="push"><strong>{{firstUpper subject}}</strong></a> &nbsp;>&nbsp;
+          {{/each}}
+          <a href="/edit/{{fuuid}}" data-ignore="push"><strong>{{description}}</strong></a>
+      </li>
+
+      {{#each formulas}}
+        <li class="table-view-cell">
+          <a class="navigate-right" href="/edit/{{uuid}}" data-ignore="push">
+            {{firstUpper subject}}
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</template>
+
+
+<template name="searchFormula2">
+    <input type="text" placeholder="..." class="searchFormula">
+    {{#if result}}
+      <select>
+        <option value="">...</option>
+        {{#each result}}
+          <option value="{{uuid}}">
+              {{firstUpper subject}}
+          </option>
+        {{/each}}
+      </select>
+    {{/if}}
+</template>
+
+
+<template name="formulaEditorTempl">
+  <div class="formulaEditor">{{> subjectroMathjaxEditor this}}</div>
+</template>
+
+<template name="proposalsent">
+  <div class="content">
+    {{#if sysLang 'en'}}
+      <p>Awsome! Thank you for your effort!</p>
+      <p>Your proposal has been sent and you will be notified after we review it.</p>
+      <a href="/browse/{{uuid}}" data-ignore="push" class="btn btn-block goBack">Go Back</a>
+    {{else}}
+      <p>Uau! Multumim pentru efort!</p>
+      <p>Propunerea a fost trimisa, iar tu vei fi notificat dupa ce o analizam.</p>
+      <a href="/browse/{{uuid}}" data-ignore="push" class="btn btn-block goBack">Inapoi</a>
+    {{/if}}
+  </div>
+</template>

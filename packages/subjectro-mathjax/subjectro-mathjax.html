@@ -1,17 +1,19 @@
 <template name='subjectroMathjaxEditor'>
-  <button id='subjectroMathjaxEditorSave'>save</button>
-  <div id="all">
-    <textarea id="editor1" class="tex2jax_ignore asciimath2jax_ignore"></textarea>
-    <textarea id="editor2" class="tex2jax_ignore asciimath2jax_ignore"></textarea>
-    <div class="previews">
-      <div id="preview1"></div>
-      =
-      <div id="preview2"></div>
+  <!--<button id='subjectroMathjaxEditorSave'>save</button>-->
+  <div id="edcontent">
+    <div id="allinputs">
+      <input type="text" placeholder="..." id="editor1" class="tex2jax_ignore asciimath2jax_ignore">
+      <input type="text" placeholder="..." id="editor2" class="tex2jax_ignore asciimath2jax_ignore">
+      <!--<div class="previews">
+        <div id="preview1"></div>
+        =ss
+        <div id="preview2"></div>
+      </div>
+      <input type="hidden" id="mathjaxEditorHiddenIni">-->
+      <input type="hidden" id="mathjaxEditorHidden">
     </div>
-    <input type="hidden" id="mathjaxEditorHiddenIni">
-    <input type="hidden" id="mathjaxEditorHidden">
+    <div id="keys"></div>
   </div>
-  <div id="keys"></div>
 </template>
 
 

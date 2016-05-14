@@ -24,7 +24,7 @@ callback-hook@1.0.8
 check@1.2.1
 chuangbo:marked@0.3.5_1
 coffeescript@1.0.17
-cosmos:browserify@0.5.1
+cosmos:browserify@0.9.3
 ddp@1.2.5
 ddp-client@1.2.7
 ddp-common@1.2.5
@@ -36,6 +36,7 @@ ecmascript@0.4.3
 ecmascript-runtime@0.2.10
 ecwyne:mathjs@2.7.0
 ejson@1.0.11
+email@1.0.12
 es5-shim@4.5.10
 fabienb4:autoform-semantic-ui@0.9.3
 facebook@1.2.6

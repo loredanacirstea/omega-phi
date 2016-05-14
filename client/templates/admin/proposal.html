@@ -1,0 +1,95 @@
+<template name="adminProposals">
+  <div class="content">
+    <ul class="table-view">
+      {{#each proposal1}}
+        <li class="table-view-cell {{status}}">
+          {{original}} -> {{subject}} -> {{author}}
+          <a class="btn" data-ignore="push" href="/admin/props/{{uuid}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+        </li>
+      {{/each}}
+      <li class="table-view-divider">{{lastTimestamp}}</li>
+      {{#each proposal2}}
+        <li class="table-view-cell {{status}}">
+          {{original}} -> {{subject}} -> {{author}}
+          <a class="btn" data-ignore="push" href="/admin/props/{{uuid}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</template>
+
+<template name="adminProposal">
+  <div class="content">
+    <div class="flex">
+      {{#each version}}
+      <div class="halfcontent">
+        <ul class="table-view">
+
+          <li class="table-view-divider">Part Of</li>
+          {{#each partof}}
+            <li class="table-view-cell">
+              {{subject}}
+            </li>
+          {{/each}}
+
+          <li class="table-view-divider">Formula</li>
+          {{#with formulaSubject}}
+            <li class="table-view-cell {{prop}}">`{{{msy.subject}}} = {{{mfr.subject}}}`</li>
+          {{/with}}
+
+          <li class="table-view-divider">Unit</li>
+          {{#with unit}}
+            <li class="table-view-cell unitSubject" data-uuid="{{uuid}}">`{{{subject}}}`</li>
+          {{/with}}
+
+          <li class="table-view-divider">Variables</li>
+          {{#each variables}}
+            <li class="table-view-cell">
+              {{subject}}
+            </li>
+          {{/each}}
+
+          <li class="table-view-divider">En</li>
+          {{#with enSubject}}
+            <li class="table-view-cell {{prop}}">{{subject}}</li>
+          {{/with}}
+
+          <li class="table-view-divider">Ro</li>
+          {{#with roSubject}}
+            <li class="table-view-cell {{prop}}">{{subject}}</li>
+          {{/with}}
+
+          <li class="table-view-divider">Wiki</li>
+          {{#with wikiSubject}}
+            <li class="table-view-cell {{prop}}">{{subject}}</li>
+          {{/with}}
+        </ul>
+      </div>
+      {{/each}}
+    </div>
+
+    {{#if proposal}}
+      <div class="card">
+        <button class="btn btn-primary btn-block saveProposal"><span class="icon icon-check" style="font-size:30px !important;"></span></button>
+        <br>
+        <button class="btn btn-block declineProposal"><span class="icon icon-close" style="font-size:30px !important;"></span></button>
+      </div>
+    {{/if}}
+
+    <ul class="table-view">
+      <li class="table-view-cell flex">
+          {{#each path}}
+            <a href="/admin/props/{{uuid}}" data-ignore="push"><strong>{{firstUpper subject}}</strong></a> &nbsp;>&nbsp;
+          {{/each}}
+          <a href="/admin/props/{{uuid}}" data-ignore="push"><strong>{{description}}</strong></a>
+      </li>
+      {{#each formulas}}
+        <li class="table-view-cell">
+          <a class="navigate-right" href="/admin/props/{{uuid}}" data-ignore="push">
+            {{firstUpper subject}}
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</template>

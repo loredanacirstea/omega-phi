@@ -6,43 +6,63 @@ export const name = 'subjectroMathjax';
 
 subjectroMathjax = {}
 var marked, renderer, ans, out, pos2=0;
-var editor, edit1, edit2, preview1, preview2, edit, preview
+var editor, edit1, edit2, edit, preview1, preview2, preview
+var dat
 
 Template.subjectroMathjaxEditor.onRendered(function() {
-  $('head').append('<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_SVG"></script>')
-  $('head').append('<script src="ASCIIMathML.js"></script>')
-  $('head').append("<script type='text/x-mathjax-config'>MathJax.Hub.Config({asciimath2jax: {delimiters: [['`','`']]}});MathJax.Hub.Typeset();</script>");
+  if(typeof MathJax == 'undefined') {
+    $('head').append('<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_SVG"></script>')
+    $('head').append('<script src="ASCIIMathML.js"></script>')
+    $('head').append("<script type='text/x-mathjax-config'>MathJax.Hub.Config({asciimath2jax: {delimiters: [['`','`']]}});</script>");
+  }
 
-  preview1 = document.getElementById("preview1")
-  preview2 = document.getElementById("preview2")
+  //preview1 = document.getElementById("preview1")
+  //preview2 = document.getElementById("preview2")
   edit1= document.getElementById("editor1")
   edit2 = document.getElementById("editor2")
+  hin = document.getElementById("mathjaxEditorHidden")
 
+  preview = Template.currentData().templ.$('.subjectroMathjaxEditor')[0]
+  edit1.value = $(preview).data('msy') || ''
+  edit2.value = $(preview).data('mfr') || ''
+  $(hin).data('msy', edit1.value)
+  $(hin).data('mfr', edit2.value)
+  edit2.focus();
+  edit = edit2
+  dat = 'mfr'
   
   edit1.onkeyup= function(e){
-    preview1.innerHTML=  "`"+edit1.value+"`";
-    MathJax.Hub.Typeset();
+    //preview1.innerHTML=  "`"+edit1.value+"`";
+    $(hin).data('msy', edit1.value)
+    $(hin).trigger('change')
     edit1.focus();
     edit = edit1
-    preview = preview1
+    dat = 'msy'
+    //preview = preview1
+    //MathJax.Hub.Typeset(preview1);
   }
   edit1.onclick = function(e) {
     edit = edit1
-    preview = preview1
+    dat = 'msy'
+    //preview = preview1
   }
   edit2.onclick = function(e) {
     edit = edit2
-    preview = preview2
+    dat = 'mfr'
+    //preview = preview2
   }
   edit2.onkeyup= function(e){
-    preview2.innerHTML=  "`"+edit2.value+"`";
-    MathJax.Hub.Typeset();
+    //preview2.innerHTML=  "`"+edit2.value+"`";
+    $(hin).data('mfr', edit2.value)
+    $(hin).trigger('change')
     edit2.focus();
     edit = edit2
-    preview = preview2
+    dat = 'mfr'
+    //preview = preview2
+    //MathJax.Hub.Typeset(preview2);
   }
 
-  $('#mathjaxEditorHiddenIni').on('change', function(e) {
+  /*$('#mathjaxEditorHiddenIni').on('change', function(e) {
     var t = $(e.currentTarget)
     var msy = t.data('msy')
     var mfr = t.data('mfr')
@@ -50,31 +70,33 @@ Template.subjectroMathjaxEditor.onRendered(function() {
     $('#editor2').val(mfr)
     preview1.innerHTML=  "`"+msy+"`";
     preview2.innerHTML=  "`"+mfr+"`";
-    MathJax.Hub.Typeset();
+    MathJax.Hub.Typeset([preview1, preview2]);
     edit2.focus();
     edit = edit2
     preview = preview2
-  })
+  })*/
+    
+
 
   show_keys("keys")
 })
 
-Template.subjectroMathjaxEditor.events({
+/*Template.subjectroMathjaxEditor.events({
     'click #subjectroMathjaxEditorSave': function(e) {
         $('#mathjaxEditorHidden').data('msy', edit1.value)
         $('#mathjaxEditorHidden').data('mfr', edit2.value)
         $('#mathjaxEditorHidden').trigger('change')
     }
-})
+})*/
 
 
 function reset(){
     editor.setValue("")
     pos2=0
-    preview1.innerHTML=  ""
-    preview2.innerHTML=  ""
+   // preview1.innerHTML=  ""
+    //preview2.innerHTML=  ""
 
-    MathJax.Hub.Typeset();
+    //MathJax.Hub.Typeset([preview1, preview2]);
     editor.focus();
 }
 
@@ -365,6 +387,7 @@ function show_keys(el_id){
         out=out+"<br>"
     }
     el.innerHTML = out
+    MathJax.Hub.Typeset(el);
 }
 
 subjectroMathjax.oper = function oper(ndx1,ndx2){
@@ -376,8 +399,10 @@ subjectroMathjax.oper = function oper(ndx1,ndx2){
         //if (document.getElementById("sync").checked) edit2.value=edit2.value+keys[ndx1][ndx2].code2.substring(1)
     //}
     
-    preview.innerHTML=  "`"+edit.value+"`";
-    MathJax.Hub.Typeset();
+    //preview.innerHTML=  "`"+edit.value+"`";
+    //MathJax.Hub.Typeset(preview);
+    $(hin).data(dat, edit.value)
+    $(hin).trigger('change')
     edit.focus();
 }
 

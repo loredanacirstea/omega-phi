@@ -1,0 +1,15 @@
+.halfcontent {
+  width: 49%;
+}
+
+.prop {
+  background-color: RGBA(0, 122, 255, 0.5);
+}
+
+.accepted {
+  background-color: RGBA(0, 122, 255, 0.2);
+}
+
+.denied {
+  background-color: RGBA(197, 84, 88, 0.2);
+}

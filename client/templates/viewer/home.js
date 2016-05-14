@@ -1,27 +1,3 @@
-sysLang = new ReactiveVar("en")
-selectedCat = new ReactiveVar()
-routeUuid = new ReactiveVar()
-
-Tracker.autorun(function() {
-  var uuid = FlowRouter.getParam('uuid')
-  if(!uuid) {
-    var p = FlowRouter.current()
-    if(p && p.params)
-      uuid = p.params.uuid
-  }
-  routeUuid.set(uuid)
-})
-
-Template.layout1.onCreated(function() {
-  $('head').append('<link rel="stylesheet" type="text/css" href="/ratchet-v2.0.2/css/ratchet.min.css">')
-  $('head').append('<link rel="stylesheet" type="text/css" href="/ratchet-v2.0.2/css/ratchet-theme-ios.min.css">')
-  //$('head').append('<link rel="stylesheet" type="text/css" href="/ratchet-v2.0.2/css/ratchet-theme-android.min.css">')
-  $('head').append('<script src="/ratchet-v2.0.2/js/ratchet.min.js"></script>');
-  $('head').append('<script src="/ASCIIMathML.js"></script>');
-  $('head').append('<script src="/MathJax/MathJax.js?config=TeX-MML-AM_SVG"></script>');
-  $('head').append("<script type='text/x-mathjax-config'>MathJax.Hub.Config({asciimath2jax: {delimiters: [['`','`']]}});</script>");
-})
-
 Template.langChooser.onRendered(function() {
   $('#langChooser').val(sysLang.get())
 })
@@ -38,51 +14,17 @@ Template.titleBar.helpers({
   }
 })
 
-var subsOpt = {
-    cacheLimit: 500,
-    expireIn: 20000 //minutes
-}
-ConceptSubs = new SubsManager(subsOpt);
-PathSubs = new SubsManager(subsOpt);
-KidsSubs = new SubsManager(subsOpt);
-VarsSubs = new SubsManager(subsOpt);
-allSubsReady = new ReactiveVar()
-Tracker.autorun(function() {
-  if(ConceptSubs.ready() && PathSubs.ready() && KidsSubs.ready() && VarsSubs.ready())
-    allSubsReady.set(true)
-  else
-    allSubsReady.set()
-})
-
 Template.formulaDetails.onCreated(function() {
   var self = this
   this.autorun(function() {
     var uuid = routeUuid.get()
-    //console.log('subs uuid: ' + uuid)
     var lang = sysLang.get()
-    //console.log('subs lang: ' + lang)
     if(!uuid || !lang)
       return
-    //console.log('subscribe')
-    //self.conceptSub = self.subscribe('concept', {uuid: uuid})
-    //self.pathSub = self.subscribe('path', uuid, lang)
-    //self.kidsSub = self.subscribe('kids', uuid, ['msy', 'mfr', lang], {limit: 50})
-    //self.varsSub = self.subscribe('vars', uuid, ['msy', 'mfr', lang])
     self.conceptSub = ConceptSubs.subscribe('concept', {uuid: uuid})
     self.pathSub = PathSubs.subscribe('path', uuid, lang)
     self.kidsSub = KidsSubs.subscribe('kids', uuid, ['msy', 'mfr', lang], {limit: 50})
     self.varsSub = VarsSubs.subscribe('vars', uuid, ['msy', 'mfr', lang])
-  })
-})
-
-Template.formulaDetails.onRendered(function() {
-  this.autorun(function() {
-    //if(Template.instance().subscriptionsReady())
-    if(allSubsReady.get())
-      Meteor.setTimeout(function() {
-        if(typeof MathJax != 'undefined')
-          MathJax.Hub.Typeset();
-      }, 500)
   })
 })
 
@@ -113,10 +55,13 @@ Template.formulaDetails.helpers({
     return obj
   },
   mathjax: function() {
+    var self = this
     if(this.msy)
       Meteor.setTimeout(function() {
         if(typeof MathJax != 'undefined')
-          MathJax.Hub.Typeset();
+          var inner = self.msy + (self.mfr ? (' = ' + self.mfr) : '')
+          $('.formulaSubject').html("`" + inner + "`")
+          MathJax.Hub.Typeset($('.formulaSubject')[0]);
       }, 1000)
     return this.msy ? (this.msy + (this.mfr ? (' = ' + this.mfr) : '')) : null;
   },
@@ -193,6 +138,14 @@ Template.formulaDetails.helpers({
         Template.instance().vars.push(sub.msy.subject)
       vars.push(sub)
     })
+    if(vars.length)
+      Meteor.setTimeout(function() {
+        if(typeof MathJax != 'undefined')
+          $('.variableSubjects').map(function() {
+            MathJax.Hub.Typeset(this);
+          })
+          MathJax.Hub.Typeset($('.variableSubjectsSame')[0]);
+      }, 1000)
     return vars
   }
 })
@@ -239,6 +192,30 @@ Template.searchFormula.events({
   'keyup .searchFormula': function(e, templ) {
     var t = templ.$(e.currentTarget)
     templ.letters.set(t.val())
+  }
+})
+
+Template.settings.helpers({
+  en: function() {
+    return sysLang.get() == 'en'
+  }
+})
+
+Template.settings.events({
+  'click #GoogleLogin': function(e,templ) {
+    Meteor.loginWithGoogle({
+      requestPermissions: [
+        'email'
+      ],
+      requestOfflineToken: false,
+      loginStyle:  "redirect"//,
+      //redirectUrl: '/browse'
+    }, function(err) {
+      if(err) console.log(err)
+    })
+  },
+  'click #logout': function(e, templ) {
+    Meteor.logout()
   }
 })
 

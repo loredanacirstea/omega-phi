@@ -1,0 +1,14 @@
+html, body {
+  height: 100%;
+  width:  100%;
+}
+
+#__blaze-root {
+  overflow: auto;
+  height: 100%;
+  width:  100%;
+}
+
+.buttonIcon {
+  font-size: 20px !important;
+}

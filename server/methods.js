@@ -1,15 +1,63 @@
+
 Meteor.methods({
+  isAdmin: function() {
+    var user = Meteor.user()
+    if(!user)
+      return false
+    if(user.roles && user.roles.admin)
+      return true
+    return false
+  },
+  isEditor: function() {
+    var user = Meteor.user()
+    if(!user)
+      return false
+    if(user.roles && user.roles.editor)
+      return true
+    return false
+  },
+  getRoles: function() {
+    var user = Meteor.user()
+    if(user)
+      return user.roles
+    return {}
+  },
+  setRole: function(userId, role, state) {
+    var u = Meteor.user()
+    if(!u || !u.roles || !u.roles.admin)
+      return
+    var user = Meteor.users.findOne(userId)
+    if(!user || !user.emails)
+      return
+    var set = {}
+    set['roles.'+role] = state
+    Meteor.users.update({_id: userId}, {$set: set})
+
+    this.unblock()
+    sendEmail(user.emails[0].address, 
+      'Omega Phi - ' + (state ? 'Added as ' : 'No longer ') + role, 
+      'Dear ' + user.profile.firstName + ' ' + user.profile.lastName + ',' + '\n\n' +
+      'We have ' + (state ? 'added you as a new ' : 'removed your role as ') + role + '.'
+    )
+  },
   countConcepts: function() {
-    return Concepts.find().count()
+    return Concept.find().count()
   },
   updateSubject: function(obj, id) {
-    if(id)
-      Subject.update({_id: id}, {$set: obj})
-    else {
-      obj.ontology = ontouuid
-      obj.upd = new Date()
-      Subject.insert(obj)
-    }
+    var u = Meteor.user()
+    if(!u || !u.roles || !u.roles.editor || !u.emails || !u.emails[0].address)
+      return
+
+    Subject2.insert(obj)
+    Concept2.insert({uuid: obj.uuid})
+
+
+    this.unblock()
+    sendEmail(adminEmail, 
+      'Omega Phi - New Proposal - ' + u.emails[0].address, 
+      'User: ' + u.profile.firstName + ' ' + u.profile.lastName + ' - ' + u.emails[0].address + '\n' +
+      'Proposal: ' + JSON.stringify(obj)
+    )
   },
   insertSubject: function(obj) {
     obj.uuid = uuid.v1()
@@ -19,7 +67,7 @@ Meteor.methods({
     obj.subject = "new"
     console.log('inserted: ' + JSON.stringify(obj))
     Subject.insert(obj)
-    Concepts.insert({uuid: obj.uuid, upd: new Date()})
+    Concept.insert({uuid: obj.uuid, upd: new Date()})
   },
   insertTerm: function(uid, obj) {
     obj.uuid = uid
@@ -69,5 +117,26 @@ Meteor.methods({
     console.log('uuids: ' + JSON.stringify(uu))
     console.log('remove: ' + JSON.stringify(Relation.find({uuid1: uuid1, uuid2: {$nin: uu}, relation: rel}).fetch()))
     Relation.remove({uuid1: uuid1, uuid2: {$nin: uu}, relation: rel})
+  },
+  saveProposal: function(id) {
+    var prop = Subject2.findOne(id)
+    if(!prop)
+      return
+    // replace in original db with new author
+    Subject.update({uuid: prop.uuid, lang: prop.lang}, {$set: {subject: prop.subject, upd: prop.createdAt, author: prop.author}})
+    Concept.update({uuid: prop.uuid}, {$set: {upd: prop.createdAt}})
+    // set proposal as accepted
+    Subject2.update({_id: id}, {$set: {accepted: true}})
+    // rate user
+    Meteor.users.update({'emails.address': prop.author}, {$inc: {'profile.rating': 1}})
+  },
+  declineProposal: function(id) {
+    var prop = Subject2.findOne(id)
+    if(!prop)
+      return
+    // set proposal as declined
+    Subject2.update({_id: id}, {$set: {accepted: false}})
+    // rate user
+    Meteor.users.update({'emails.address': prop.author}, {$inc: {'profile.rating': -1}})
   }
 })

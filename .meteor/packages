@@ -18,6 +18,9 @@ es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
 # react
+# audit-argument-checks
+email
+
 stevezhu:lodash
 
 loredanacirstea:subjectro-core
@@ -25,7 +28,7 @@ loredanacirstea:subjectro-db
 loredanacirstea:subjectro-search
 loredanacirstea:subjectro-mathjax
 
-accounts-base
+service-configuration
 accounts-google
 accounts-facebook
 

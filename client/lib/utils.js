@@ -11,6 +11,19 @@ Template.registerHelper('firstUpper', function(a) {
     return firstUpper(a)
 })
 
+Template.registerHelper('isRole', function(role) {
+  return userRoles.get()[role]
+})
+
+Template.registerHelper('encodeURI', function(a) {
+  return encodeURIComponent(a)
+})
+
+Template.registerHelper('sysLang', function(l) {
+  if(sysLang.get())
+    return sysLang.get() == l
+  return false
+})
 
 firstUpper = function(a) {
   return a[0].toUpperCase() + a.substring(1)

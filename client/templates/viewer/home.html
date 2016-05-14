@@ -1,47 +1,3 @@
-
-<head>
-  <meta charset="utf-8">
-  <title>Omega</title>
-
-  <!-- Sets initial viewport load and disables zooming  -->
-  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-
-  <!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-</head>
-
-
-
-<template name="layout1">
-  {{> Template.dynamic template=top}}
-  {{> Template.dynamic template=bottom}}
-  {{> Template.dynamic template=main}}
-</template>
-
-<template name="titleBar">
-  <header class="bar bar-nav">
-    <a href="/browse/{{uuid}}" data-ignore="push"><h1 class="title omegaTitle"><img src="/omegaTitle.svg" class="omegaTitle"></h1></a>
-  </header>
-</template>
-
-<template name="menuBar">
-  <nav class="bar bar-tab">
-    <a class="tab-item" href="/" data-ignore="push">
-      <span class="icon icon-list"></span>
-    </a>
-    <a class="tab-item" href="/search" data-ignore="push">
-      <span class="icon icon-search"></span>
-    </a>
-    <a class="tab-item" href="/settings" data-ignore="push">
-      <span class="icon icon-gear"></span>
-    </a>
-    <a class="tab-item" href="/info" data-ignore="push">
-      <span class="icon icon-info"></span>
-    </a>
-  </nav>
-</template>
-
 <template name="formulaDetails">
   <div class="content">
     {{#with formula}}
@@ -51,7 +7,12 @@
               <a href="/browse/{{uuid}}" data-ignore="push"><strong>{{firstUpper subject}}</strong></a> &nbsp;>&nbsp;
             {{/each}}
             <a href="/browse/{{uuid}}" data-ignore="push"><strong>{{description}}</strong></a>
-            <button class="btn"><a href="{{wiki}}" data-ignore="push" target="_blank">wiki</a></button>
+            {{# if isRole 'editor'}}
+              <a href="/edit/{{uuid}}" class="btn" style="right:80px !important; font-size: 20px !important;" data-ignore="push">
+                <span class="icon icon-edit"></span>
+              </a>
+            {{/if}}
+            <a href="{{wiki}}" class="btn" data-ignore="push" target="_blank" style="font-size: 20px !important;">wiki</a>
         </li>
 
         {{#each formulas}}
@@ -68,19 +29,19 @@
         {{/each}}
 
         {{#if mathjax}}
-          <li class="table-view-cell">`{{{mathjax}}}`</li>
+          <li class="table-view-cell formulaSubject">`{{{mathjax}}}`</li>
         {{/if}}
 
         {{#if variables}}
           {{#each variable}}
-            <li class="table-view-cell">
+            <li class="table-view-cell variableSubjects">
               <a data-ignore="push" href="/browse/{{uuid}}">{{firstUpper subject}}</a>
-              <span>{{#if msy}}`{{{msy.subject}}}`{{/if}}</span>
+              <span id="variableSubject_{{_id}}">{{#if msy}}`{{{msy.subject}}}`{{/if}}</span>
               <input type="text" placeholder="..." class="variableInput" data-var="{{#if msy}}{{msy.subject}}{{/if}}">
-              <span>{{#if unit}}`{{{unit.subject}}}`{{/if}}</span>
+              <span id="unitSubject_{{_id}}">{{#if unit}}`{{{unit.subject}}}`{{/if}}</span>
             </li>
           {{/each}}
-          <li class="table-view-cell">
+          <li class="table-view-cell variableSubjectsSame">
             <span>`{{{msy}}}`</span>
             <input type="text" readonly="true" class="formulaResult">
             <span>`{{{unit}}}`</span>
@@ -111,7 +72,25 @@
 
 <template name="settings">
   <div class="content">
-    {{> langChooser}}
+    <div class="content-padded">
+      {{> langChooser}}
+      {{#if currentUser}}
+        {{#if isRole 'admin'}}
+          <a href="/admin/users" data-ignore="push" class="btn btn-block">Users</a>
+          <a href="/admin/props" data-ignore="push" class="btn btn-block">Proposals</a>
+        {{/if}}
+        <button class="btn btn-negative btn-block btn-outlined" id="logout">Log Out</button>
+      {{else}}
+        {{#if en}}
+          <p>Want to contribute?</p>
+          <p>If you want to edit or add formulas, log in by clicking below. You will be notified through email after we have added you as an editor and you will receive credit for your contributions.</p>
+        {{else}}
+          <p>Vrei sa contribui?</p>
+          <p>Daca vrei sa modifici sau sa adaugi formule, logheaza-te facand click mai jos. Vei fi anuntat prin email dupa ce te adaugam cu rol de editor si vei fi recunoscut pentru contributiile tale.</p>
+        {{/if}}
+        <button class="btn btn-negative btn-block" id="GoogleLogin">Google</button>
+      {{/if}}
+    </div>
   </div>
 </template>
 

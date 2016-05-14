@@ -1,0 +1,43 @@
+
+<head>
+  <meta charset="utf-8">
+  <title>Omega</title>
+
+  <!-- Sets initial viewport load and disables zooming  -->
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+
+  <!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+</head>
+
+
+
+<template name="layout1">
+  {{> Template.dynamic template=top}}
+  {{> Template.dynamic template=bottom}}
+  {{> Template.dynamic template=main}}
+</template>
+
+<template name="titleBar">
+  <header class="bar bar-nav">
+    <a href="/browse/{{uuid}}" data-ignore="push"><h1 class="title omegaTitle"><img src="/omegaTitle.svg" class="omegaTitle"></h1></a>
+  </header>
+</template>
+
+<template name="menuBar">
+  <nav class="bar bar-tab">
+    <a class="tab-item" href="/" data-ignore="push">
+      <span class="icon icon-list"></span>
+    </a>
+    <a class="tab-item" href="/search" data-ignore="push">
+      <span class="icon icon-search"></span>
+    </a>
+    <a class="tab-item" href="/settings" data-ignore="push">
+      <span class="icon icon-gear"></span>
+    </a>
+    <a class="tab-item" href="/info" data-ignore="push">
+      <span class="icon icon-info"></span>
+    </a>
+  </nav>
+</template>

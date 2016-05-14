@@ -21,3 +21,58 @@ Meteor.startup(() => {
     })
   })
 });
+
+sysLang = new ReactiveVar("en")
+routeUuid = new ReactiveVar()
+
+Tracker.autorun(function() {
+  var uuid = FlowRouter.getParam('uuid')
+  if(!uuid) {
+    var p = FlowRouter.current()
+    if(p && p.params)
+      uuid = p.params.uuid
+  }
+  routeUuid.set(uuid)
+})
+
+// Subscriptions
+var subsOpt = {
+    cacheLimit: 500,
+    expireIn: 20000 //minutes
+}
+ConceptSubs = new SubsManager(subsOpt);
+PathSubs = new SubsManager(subsOpt);
+KidsSubs = new SubsManager(subsOpt);
+VarsSubs = new SubsManager(subsOpt);
+allSubsReady = new ReactiveVar()
+Tracker.autorun(function() {
+  if(ConceptSubs.ready() && PathSubs.ready() && KidsSubs.ready() && VarsSubs.ready())
+    allSubsReady.set(true)
+  else
+    allSubsReady.set()
+})
+
+Tracker.autorun(function() {
+  var userId = Meteor.userId()
+  if(userId)
+    userSub = Meteor.subscribe('user')
+  else if(userSub)
+    userSub.stop()
+})
+
+// User Roles
+userRoles = new ReactiveVar({})
+
+Tracker.autorun(function() {
+  var user = Meteor.user()
+  if(user)
+    Meteor.call('getRoles', function(err, res) {
+      if(err)
+        console.log(err)
+      if(res)
+        userRoles.set(res)
+    })
+  else
+    userRoles.set({})
+})
+    

@@ -10,9 +10,15 @@ FlowRouter.route('/formulas/:page?', {
     }
 });
 
-FlowRouter.route('/admin', {
+FlowRouter.route('/edit/:uuid?', {
     action: function(params, queryParams) {
-      BlazeLayout.render('admin');
+      BlazeLayout.render('layout1', { top: "titleBar", main: "editFormula", bottom:"menuBar"});
+    }
+});
+
+FlowRouter.route('/proposalsent', {
+    action: function(params, queryParams) {
+      BlazeLayout.render('layout1', { top: "titleBar", main: "proposalsent", bottom:"menuBar"});
     }
 });
 
@@ -43,5 +49,23 @@ FlowRouter.route('/settings', {
 FlowRouter.route('/info', {
     action: function(params, queryParams) {
       BlazeLayout.render('layout1', { top: "titleBar", main: "info", bottom:"menuBar"});
+    }
+});
+
+FlowRouter.route('/admin/users', {
+    action: function(params, queryParams) {
+      BlazeLayout.render('layout1', { top: "titleBar", main: "adminUsers", bottom:"menuBar"});
+    }
+});
+
+FlowRouter.route('/admin/props', {
+    action: function(params, queryParams) {
+      BlazeLayout.render('layout1', { top: "titleBar", main: "adminProposals", bottom:"menuBar"});
+    }
+});
+
+FlowRouter.route('/admin/props/:uuid', {
+    action: function(params, queryParams) {
+      BlazeLayout.render('layout1', { top: "titleBar", main: "adminProposal", bottom:"menuBar"});
     }
 });

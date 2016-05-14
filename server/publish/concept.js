@@ -19,6 +19,14 @@ Meteor.publish('subject', function(query, options) {
   return Subject.find(query, options)
 })
 
+Meteor.publish('users', function() {
+  return Meteor.users.find({}, {fields: {emails: 1, profile: 1, roles: 1}})
+})
+
+Meteor.publish('user', function() {
+  return Meteor.users.find({_id: this.userId}, {fields: {emails: 1, profile: 1, roles: 1}})
+})
+
 Meteor.publish('conceptall', function() {
   return [
     Subject.find(),
@@ -26,11 +34,17 @@ Meteor.publish('conceptall', function() {
   ]
 })
 
+Meteor.publish('conceptCol', function(query, options) {
+  query = query || {}
+  options = options || {}
+  return Concept.find(query, options)
+})
+
 Meteor.publishComposite('concept', function(query, options) {
   query = query || {}
   options = options || {}
   options.sort = {upd: 1}
-  console.log('publish concept; query: ' + JSON.stringify(query) + '; options: ' + JSON.stringify(options))
+  //console.log('publish concept; query: ' + JSON.stringify(query) + '; options: ' + JSON.stringify(options))
 
   return {
     find: function() {

@@ -1,7 +1,7 @@
 App.info({
   id: 'ro.oroboro.omegaphi',
   name: 'Omega Phi',
-  version: "0.1.0",
+  version: "0.2.0",
   description: 'Physics formulas - browsing, searching, problem solver',
   author: 'Kuip Limited',
   email: 'kuip.ltd@gmail.com',

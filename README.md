@@ -12,7 +12,7 @@ https://www.youtube.com/watch?v=OUDcfJwGIgA
 Version
 ----
 
-Ver.0.1.1 - currently in work
+Ver. 0.2.0
 
 License
 =========
