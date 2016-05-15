@@ -8,6 +8,13 @@ updateProfileFromService = function(user) {
     if(!user)
       user = {}
 
+    //populate profile with data
+    set = {
+      'profile.firstName': gdata.given_name, 
+      'profile.lastName': gdata.family_name,
+      'profile.avatar': gdata.picture
+    }
+    
     // add the email
     if(!user.emails)
       set.emails = [{address: gdata.email, verified: gdata.verified_email}]
@@ -21,18 +28,12 @@ updateProfileFromService = function(user) {
         addTo = {emails: {address: gdata.email, verified: gdata.verified_email}}
     }
 
-    //populate profile with data
-    set.profile = {
-      firstName: gdata.given_name, 
-      lastName: gdata.family_name,
-      avatar: gdata.picture
-    }
     var upd = {$set: set}
     if(addTo)
       upd['$addToSet'] = addTo
     //console.log(JSON.stringify(upd))
 
-    Meteor.users.update({_id: user._id}, {$set: set}, {validate: false})
+    Meteor.users.update({_id: user._id}, upd)
   }
   /*if(user.services.facebook) {
     console.log('facebook')
@@ -75,6 +76,7 @@ Accounts.onCreateUser(function(options, user) {
     'User: ' + options.profile.name + ' ' + '\n' +
     'Email: ' + user.services.google.email
   )
+
   return user;
 })
 
