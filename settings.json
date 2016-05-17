@@ -7,19 +7,20 @@
     },
     "version": "0.2.0",
     "description": "Physics formulas - browsing, searching, problem solver",
+    "rootUrl": "http://orobo.go.ro:5500",
     "height": 768,
     "width": 1024,
     "frame": true,
     "title-bar-style": "hidden",
     "resizable": true,
     "downloadUrls": {
-      "win32": "/download/win/",
-      "darwin": "/download/osx/{{version}}/OmegaPhi.zip"
+      "win32.installer": "/download/win/OmegaPhiWin.exe",
+      "darwin": "/download/osx/OmegaPhiOSX.zip"
     },
     "builds": [
       {"platform": "win32",
        "arch": "ia32"}
     ],
-    "autoPackage": true
+    "autoBuild": false
   }
 }

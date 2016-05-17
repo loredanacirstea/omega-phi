@@ -1,6 +1,4 @@
 Meteor.startup(() => {
-  AutoForm.setDefaultTemplate("semanticUI");
-
   // Handle click events for all external URLs on mobile
   if(!Meteor.isCordova)
     return
