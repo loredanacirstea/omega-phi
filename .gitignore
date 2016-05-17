@@ -1,2 +1,3 @@
 node_modules/
 server/credentials.js
+.meteor-electron/

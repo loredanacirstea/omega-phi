@@ -17,20 +17,16 @@ standard-minifier-js    # JS minifier run for production mode
 es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
-# react
 # audit-argument-checks
 email
 
+# should be removed - home.js uses it
 stevezhu:lodash
 
-loredanacirstea:subjectro-core
-loredanacirstea:subjectro-db
-loredanacirstea:subjectro-search
-loredanacirstea:subjectro-mathjax
+mdj:meteor-node-uuid
 
 service-configuration
 accounts-google
-accounts-facebook
 
 kadira:flow-router
 kadira:blaze-layout
@@ -38,21 +34,20 @@ meteorhacks:picker
 meteorhacks:subs-manager
 
 aldeed:collection2
-aldeed:autoform
-fabienb4:autoform-semantic-ui
-loredanacirstea:meteor-tabular-filter
-mdj:meteor-node-uuid
-
-# semantic:ui
-# flemay:less-autoprefixer
-
 reywood:publish-composite
 
-chuangbo:marked
+loredanacirstea:subjectro-core
+loredanacirstea:subjectro-db
+loredanacirstea:subjectro-search
+loredanacirstea:subjectro-mathjax
 
+
+# solver
 ecwyne:mathjs
 
+# desktop
 #arboleya:electrify
+#meson:electron
 
 # android:
 #meteor add cordova:org.apache.cordova.inappbrowser@1.4.0
