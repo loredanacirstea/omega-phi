@@ -79,14 +79,21 @@
           <a href="/admin/users" data-ignore="push" class="btn btn-block">Users</a>
           <a href="/admin/props" data-ignore="push" class="btn btn-block">Proposals</a>
         {{/if}}
+        {{#if en}}
+          <p>Here is a video about how to submit proposals for modifying the formulas: <a data-ignore="push" target="_blank" href="https://www.youtube.com/watch?v=1uDQFt25oMc">tutorial video</a></p>
+        {{else}}
+          <p>Cum sa editezi formulele - scurt <a data-ignore="push" target="_blank" href="https://www.youtube.com/watch?v=1uDQFt25oMc">video</a></p>
+        {{/if}}
         <button class="btn btn-negative btn-block btn-outlined" id="logout">Log Out</button>
       {{else}}
         {{#if en}}
           <p>Want to contribute?</p>
           <p>If you want to edit or add formulas, log in by clicking below. You will be notified through email after we have added you as an editor and you will receive credit for your contributions.</p>
+          <p>Here is a video about how to submit proposals for modifying the formulas: <a data-ignore="push" target="_blank" href="https://www.youtube.com/watch?v=1uDQFt25oMc">tutorial video</a></p>
         {{else}}
           <p>Vrei sa contribui?</p>
           <p>Daca vrei sa modifici sau sa adaugi formule, logheaza-te facand click mai jos. Vei fi anuntat prin email dupa ce te adaugam cu rol de editor si vei fi recunoscut pentru contributiile tale.</p>
+          <p>Cum sa editezi formulele - scurt <a data-ignore="push" target="_blank" href="https://www.youtube.com/watch?v=1uDQFt25oMc">video</a></p>
         {{/if}}
         <button class="btn btn-negative btn-block" id="GoogleLogin">Google</button>
       {{/if}}
@@ -112,14 +119,16 @@
       <p>Mac OS X: <a data-ignore="push" target="_blank" href="/download/osx/OmegaPhiOSX.zip">{{#if en}}direct download link{{else}}link direct de download{{/if}}</a></p>
       <p>Windows: <a data-ignore="push" target="_blank" href="/download/win/Omega Phi-win32-ia32.zip">{{#if en}}direct download link{{else}}link direct de download{{/if}}</a></p>
       <p>Linux 64bit: - </p>
+      <p>Web (browser) <a data-ignore="push" target="_blank" href="http://orobo.go.ro:5500">link</a></p>
+      <br><br>
       {{#if en}}
-        <p>Web (browser) <a data-ignore="push" target="_blank" href="http://orobo.go.ro:5500">link</a></p>
         <p>Short <a data-ignore="push" target="_blank" href="https://www.youtube.com/watch?v=OUDcfJwGIgA">tutorial video</a></p>
+        <p>How to submit proposals for modifying the formulas: <a data-ignore="push" target="_blank" href="https://www.youtube.com/watch?v=1uDQFt25oMc">tutorial video</a></p>
         <p>Created by <a data-ignore="push" target="_blank" href="http://www.kuip.co.uk/">Kuip</a></p>
         <p>Open source code: <a data-ignore="push" target="_blank" href="https://github.com/loredanacirstea/omega-phi">GitHub</a></p>
       {{else}}
-        <p>Versiune web (browser) <a data-ignore="push" target="_blank" href="http://orobo.go.ro:5500">link</a></p>
         <p>Scurt <a data-ignore="push" target="_blank" href="https://www.youtube.com/watch?v=OUDcfJwGIgA">video explicativ</a></p>
+        <p>Cum sa editezi formulele - scurt <a data-ignore="push" target="_blank" href="https://www.youtube.com/watch?v=1uDQFt25oMc">video</a></p>
         <p>Creat de <a data-ignore="push" target="_blank" href="http://www.kuip.co.uk/">Kuip</a></p>
         <p>Codul sursa: <a data-ignore="push" target="_blank" href="https://github.com/loredanacirstea/omega-phi">GitHub</a></p>
       {{/if}}

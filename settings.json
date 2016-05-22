@@ -5,7 +5,7 @@
       "darwin": "public/electron-icons/omega-phi3.icns",
       "win32": "public/electron-icons/omega-phi3.ico"
     },
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Physics formulas - browsing, searching, problem solver",
     "rootUrl": "http://orobo.go.ro:5500",
     "height": 768,
@@ -16,8 +16,7 @@
     "downloadUrls": {
       "win32.installer": "/download/win/OmegaPhiWin.exe",
       "darwin": "/download/osx/OmegaPhiOSX.zip"
-    },
-    "autoBuild": false
+    }
   }
 }
  

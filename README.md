@@ -4,15 +4,23 @@ OmegaPhi
 Physics formulas - browsing, searching, problem solver
 
 Web App: http://orobo.go.ro:5500
+
 Android App: https://play.google.com/store/apps/details?id=ro.oroboro.omegaphi
+
+Mac OS X: http://orobo.go.ro:5500/download/osx/OmegaPhiOSX.zip
+
+Windows: http://orobo.go.ro:5500/download/win/Omega%20Phi-win32-ia32.zip
 
 1 minute video demo:
 https://www.youtube.com/watch?v=OUDcfJwGIgA
 
+how to edit formulas:
+https://www.youtube.com/watch?v=1uDQFt25oMc
+
 Version
 ----
 
-Ver. 0.2.0
+Ver. 0.2.1
 
 License
 =========
