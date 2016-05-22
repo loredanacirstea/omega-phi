@@ -50,4 +50,4 @@ ecwyne:mathjs
 # meson:electron
 
 # android:
-meteor add cordova:org.apache.cordova.inappbrowser@1.4.0
+#meteor add cordova:org.apache.cordova.inappbrowser@1.4.0
