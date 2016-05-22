@@ -19,12 +19,44 @@ Meteor.publishComposite('proposals', function(lang, query, options) {
             }
           }
         ]
+      },
+      {
+        find: function(c) {
+          return Relation2.find({uuid1: c.uuid})
+        },
+        children: [
+          {
+            find: function(r) {
+              return Subject.find({uuid: r.uuid1, lang: lang})
+            }
+          },
+          {
+            find: function(r) {
+              return Subject.find({uuid: r.uuid2, lang: lang})
+            }
+          }
+        ]
       }
     ]
   }
 })
 
-// we should have a single collection for proposals
-Meteor.publish('proposal', function(id) {
-  return Subject2.find({_id: id})
+Meteor.publishComposite('proposal', function(id, lang) {
+  return {
+    find: function() {
+      if(Subject2.findOne({_id: id}))
+        return Subject2.find({_id: id})
+      else
+        return Relation2.find({_id: id})
+    },
+    children: [
+      {
+        find: function(r) {
+          if(r.uuid2 && !r.remove)
+            return Subject.find({uuid: r.uuid2, lang: lang})
+          return
+        }
+      }
+    ]
+  }
 })

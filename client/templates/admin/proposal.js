@@ -12,7 +12,13 @@ Template.adminProposals.helpers({
   proposal1: function() {
     var c = Concept.findOne({}, {sort: {upd: -1}})
     if(c)
-      return Subject2.find({createdAt: {$gt: c.upd}}, {sort: {upd: -1}}).fetch()
+      return Subject2.find({createdAt: {$gt: c.upd}}, {sort: {upd: -1}}).fetch().concat(
+        Relation2.find({createdAt: {$gt: c.upd}}, {sort: {upd: -1}}).map(function(r) {
+          r.sub1 = Subject.findOne({uuid: r.uuid1, lang: sysLang.get()})
+          r.sub2 = Subject.findOne({uuid: r.uuid2, lang: sysLang.get()})
+          return r
+        })
+      )
   },
   proposal2: function() {
     var c = Concept.findOne({}, {sort: {upd: -1}})
@@ -20,7 +26,16 @@ Template.adminProposals.helpers({
       return Subject2.find({$or: [
         {createdAt: c.upd},
         {createdAt: {$lt: c.upd}}
-        ]}, {sort: {upd: -1}}).fetch()
+        ]}, {sort: {upd: -1}}).fetch().concat(
+        Relation2.find({$or: [
+        {createdAt: c.upd},
+        {createdAt: {$lt: c.upd}}
+        ]}, {sort: {upd: -1}}).map(function(r) {
+          r.sub1 = Subject.findOne({uuid: r.uuid1, lang: sysLang.get()})
+          r.sub2 = Subject.findOne({uuid: r.uuid2, lang: sysLang.get()})
+          return r
+        })
+      )
   },
   original: function() {
     var s = Subject.findOne({uuid: this.uuid, lang: this.lang})
@@ -33,6 +48,14 @@ Template.adminProposals.helpers({
     if(typeof this.accepted == 'boolean')
       return 'denied'
     return ''
+  },
+  relationtype: function(rel) {
+    if(rel == 1)
+      return 'is part of:'
+    if(rel == 13)
+      return 'has unit:'
+    if(rel == 15)
+      return 'has variable:'
   }
 })
 
@@ -57,11 +80,14 @@ Template.adminProposal.onCreated(function() {
     self.varsSub = VarsSubs.subscribe('vars', uuid, [lang])
     self.pathSub = PathSubs.subscribe('path', uuid, lang)
     self.kidsSub = KidsSubs.subscribe('kids', uuid, [lang], {limit: 50})
-    self.subscribe('proposal', id)
+    self.subscribe('proposal', id, lang)
   })
 
   this.autorun(function() {
-    self.proposal.set(Subject2.findOne(FlowRouter.getQueryParam('id')))
+    self.proposal.set(
+      Subject2.findOne(FlowRouter.getQueryParam('id')) || 
+      Relation2.findOne(FlowRouter.getQueryParam('id'))
+    )
   })
 })
 
@@ -80,6 +106,26 @@ Template.adminProposal.helpers({
     return ['o']
   },
   partof: function() {
+    var proposal = Template.instance().proposal.get()
+    if(this.valueOf() == 'p' && proposal && proposal.relation == 1) {
+      var objs = Relation.find({uuid1: routeUuid.get(), relation: 1}).map(function(r) {
+        var s = Subject.findOne({uuid: r.uuid2, lang: sysLang.get()})
+        if(proposal.uuid2 == r.uuid2) {
+          s.prop = 'prop'
+          if(proposal.remove)
+            s.remove = 'remove'
+        }
+        return s
+      })
+      if(!proposal.remove) {
+        var s = Subject.findOne({uuid: proposal.uuid2, lang: sysLang.get()})
+        if(s) {
+          s.prop = 'prop'
+          objs.push(s)
+        }
+      }
+      return objs
+    }
     return Relation.find({uuid1: routeUuid.get(), relation: 1}).map(function(r) {
       return Subject.findOne({uuid: r.uuid2, lang: sysLang.get()})
     })
@@ -87,33 +133,67 @@ Template.adminProposal.helpers({
   formulaSubject: function() {
     var uuid = routeUuid.get(), 
       proposal = Template.instance().proposal.get(),
-      msy, mfr, prop = ''
+      msy, mfr,
+      q = $('.formulaProposal_'+this.valueOf())
+
     if(this.valueOf() == 'p' && proposal) {
       if(proposal.lang == 'msy')
         msy = proposal
       if(proposal.lang == 'mfr')
         mfr = proposal
-      if(msy || mfr) prop = 'prop'
+      if(msy || mfr)
+        q.addClass('prop')
     }
     if(!msy)
       msy = Subject.findOne({uuid: uuid, lang: 'msy'}) || {}
     if(!mfr)
       mfr = Subject.findOne({uuid: uuid, lang: 'mfr'}) || {}
 
-    return {
-      msy: msy,
-      mfr: mfr,
-      prop: prop
-    }
+    var inner = "`" + msy.subject + '=' + mfr.subject + "`"
+    q.html(inner)
+    MathJax.Hub.Typeset(q[0])
   },
   unit: function() {
-    var r = Relation.findOne({uuid1: routeUuid.get(), relation: 13})
-    var s
+    var r, 
+      proposal = Template.instance().proposal.get(),
+      q = $('.unitProposal_'+this.valueOf())
+
+    if(this.valueOf() == 'p' && proposal)
+      if(proposal.relation == 13) {
+        r = proposal
+        q.addClass('prop')
+      }
+    if(!r)
+      r = Relation.findOne({uuid1: routeUuid.get(), relation: 13})
     if(r)
-      s = Subject.findOne({uuid: r.uuid2, lang: 'unit'})
-    return s
+      var s = Subject.findOne({uuid: r.uuid2, lang: 'unit'})
+    if(s) {
+      var inner = "`" + s.subject + "`"
+      q.html(inner)
+      MathJax.Hub.Typeset(q[0])
+    }
   },
   variables: function() {
+    var proposal = Template.instance().proposal.get()
+    if(this.valueOf() == 'p' && proposal && proposal.relation == 15) {
+      var objs = Relation.find({uuid1: routeUuid.get(), relation: 15}).map(function(r) {
+        var s = Subject.findOne({uuid: r.uuid2, lang: sysLang.get()})
+        if(proposal.uuid2 == r.uuid2) {
+          s.prop = 'prop'
+          if(proposal.remove)
+            s.remove = 'remove'
+        }
+        return s
+      })
+      if(!proposal.remove) {
+        var s = Subject.findOne({uuid: proposal.uuid2, lang: sysLang.get()})
+        if(s) {
+          s.prop = 'prop'
+          objs.push(s)
+        }
+      }
+      return objs
+    }
     return Relation.find({uuid1: routeUuid.get(), relation: 15}).map(function(r) {
       return Subject.findOne({uuid: r.uuid2, lang: sysLang.get()})
     })

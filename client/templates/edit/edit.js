@@ -11,6 +11,10 @@ Template.editFormula.onCreated(function() {
   this.uUuid = new ReactiveVar()
   this.vUuids = new ReactiveVar([])
 
+  this.poresult = new ReactiveVar()
+  this.uresult = new ReactiveVar()
+  this.vresult = new ReactiveVar()
+
   this.autorun(function() {
     var uuid = routeUuid.get()
     var lang = sysLang.get()
@@ -20,6 +24,51 @@ Template.editFormula.onCreated(function() {
     self.varsSub = VarsSubs.subscribe('vars', uuid, ['msy', 'mfr', lang])
     self.pathSub = PathSubs.subscribe('path', uuid, lang)
     self.kidsSub = KidsSubs.subscribe('kids', uuid, [lang], {limit: 50})
+  })
+
+  this.autorun(function() {
+    var po = Relation.find({uuid1: routeUuid.get(), relation: 1}).map(function(r) {
+      return r.uuid2
+    })
+    var u = Relation.findOne({uuid1: routeUuid.get(), relation: 13})
+    if(u) u = u.uuid2
+    var vars = Relation.find({uuid1: routeUuid.get(), relation: 15}).map(function(r) {
+      return r.uuid2
+    })
+    self.poUuids.set(po)
+    self.uUuid.set(u)
+    self.vUuids.set(vars)
+  })
+
+  this.autorun(function() {
+    var po = self.poresult.get()
+    console.log(po)
+    if(po)
+      Tracker.nonreactive(function() {
+        var pos = self.poUuids.get()
+        pos.push(po)
+        self.poUuids.set(pos)
+        Meteor.subscribe('term', po, sysLang.get())
+      })
+  })
+  this.autorun(function() {
+    var po = self.uresult.get()
+    console.log(po)
+    if(po) {
+      self.uUuid.set(po)
+      Meteor.subscribe('term', po, 'unit')
+    }
+  })
+  this.autorun(function() {
+    var po = self.vresult.get()
+    console.log(po)
+    if(po)
+      Tracker.nonreactive(function() {
+        var pos = self.vUuids.get()
+        pos.push(po)
+        self.vUuids.set(pos)
+        Meteor.subscribe('term', po, sysLang.get())
+      })
   })
 })
 
@@ -55,37 +104,38 @@ Template.editFormula.helpers({
   templinst: function() {
     return Template.instance()
   },
-  partof: function() {
-    return Relation.find({uuid1: routeUuid.get(), relation: 1}).map(function(r) {
-      return Subject.findOne({uuid: r.uuid2, lang: sysLang.get()})
-    })
+  poresult: function() {
+    return Template.instance().poresult
   },
-  poResult: function() {
-
+  uresult: function() {
+    return Template.instance().uresult
+  },
+  vresult: function() {
+    return Template.instance().vresult
+  },
+  partof: function() {
+    return Subject.find({uuid: {$in: Template.instance().poUuids.get()}, lang: sysLang.get()}).fetch()
   },
   formulaSubject: function() {
     var msy = Subject.findOne({uuid: routeUuid.get(), lang: 'msy'}) || {}
     var mfr = Subject.findOne({uuid: routeUuid.get(), lang: 'mfr'}) || {}
     return {
       msy: msy,
-      mfr: mfr//,
-      //formula: msy.subject ? (msy.subject + (mfr.subject ? (' = ' + mfr.subject) : '')) : null
+      mfr: mfr
     }
   },
   formulaEditor: function() {
     return Template.instance().formulaEditor.get()
   },
   unit: function() {
-    var r = Relation.findOne({uuid1: routeUuid.get(), relation: 13})
-    var s
-    if(r)
-      s = Subject.findOne({uuid: r.uuid2, lang: 'unit'})
-    return s
+    var s = Subject.findOne({uuid: Template.instance().uUuid.get(), lang: 'unit'})
+    if(s && $('.unitSubject')[0]) {
+      Template.instance().$('.unitSubject').html("`" + s.subject + "`")
+      MathJax.Hub.Typeset($('.unitSubject')[0]);
+    }
   },
   variables: function() {
-    return Relation.find({uuid1: routeUuid.get(), relation: 15}).map(function(r) {
-      return Subject.findOne({uuid: r.uuid2, lang: sysLang.get()})
-    })
+    return Subject.find({uuid: {$in: Template.instance().vUuids.get()}, lang: sysLang.get()}).fetch()
   },
   enSubject: function() {
     return Subject.findOne({uuid: routeUuid.get(), lang: 'en'}) || {}
@@ -103,10 +153,8 @@ Template.editFormula.helpers({
     if(!lang) return
     var rels = Relation.findOne({relation: 1, uuid2: {$ne: uuid}})
     if(Template.instance().pathSub.ready()) {
-      //console.log('redo path')
       var uuids = getPath(uuid)
       uuids.reverse()
-      //console.log('path uuids: ' + JSON.stringify(uuids))
       return uuids.map(function(id) {
         return Subject.findOne({uuid: id, lang: lang})
       })
@@ -141,14 +189,11 @@ Template.editFormula.events({
   'click .saveConcept': function(e, templ) {
     var uuid = routeUuid.get()
 
-    //var pofs = 
     var f = templ.$('.formulaSubjectSpan'),
       msy = f.data('msy'),
       mfr = f.data('mfr'),
       msys = Subject.findOne({uuid: uuid, lang: 'msy'}) || {},
       mfrs = Subject.findOne({uuid: uuid, lang: 'mfr'}) || {}
-    var unit = templ.$('.unitSubject').data('uuid')
-    //var vars = 
     var en = templ.$('.enSubject').val(),
       enid = templ.$('.enSubject').data('id'),
       ens = Subject.findOne({uuid: uuid, lang: 'en'})
@@ -158,12 +203,6 @@ Template.editFormula.events({
     var wiki = templ.$('.wikiSubject').val(),
       wikid = templ.$('.wikiSubject').data('id'),
       wikis = Subject.findOne({uuid: uuid, lang: 'wiki'})
-
-    console.log(en)
-    console.log(ro)
-    console.log(wiki)
-    console.log(msy)
-    console.log(mfr)
 
     if(msy && msy != '' && (!msys || msys.subject != msy))
       Meteor.call('updateSubject', {uuid: uuid, lang: 'msy', subject: msy}, msys._id, function(err, res) {
@@ -186,6 +225,42 @@ Template.editFormula.events({
         if(err) console.log(err)
       })
 
+    var pofs = templ.poUuids.get()
+    var unit = templ.uUuid.get()
+    var vars = templ.vUuids.get()
+    var poUuids = Relation.find({uuid1: uuid, relation: 1}).map(function(r) {
+      return r.uuid2
+    })
+    var uUuid = Relation.findOne({uuid1: uuid, relation: 13})
+    if(uUuid) uUuid = uUuid.uuid2
+    var varsUuids = Relation.find({uuid1: uuid, relation: 15}).map(function(r) {
+      return r.uuid2
+    })
+
+    pofs.forEach(function(po) {
+      if(poUuids.indexOf(po) == -1)
+        Meteor.call('updateRelation', {uuid1: uuid, relation: 1, uuid2: po}, true)
+    })
+    poUuids.forEach(function(po) {
+      if(pofs.indexOf(po) == -1)
+        Meteor.call('updateRelation', {uuid1: uuid, relation: 1, uuid2: po}, false)
+    })
+    if(uUuid != unit) {
+      Meteor.call('updateRelation', {uuid1: uuid, relation: 13, uuid2: unit}, true)
+      if(uUuid)
+        Meteor.call('updateRelation', {uuid1: uuid, relation: 13, uuid2: uUuid}, false)
+    }
+    vars.forEach(function(v) {
+      if(varsUuids.indexOf(v) == -1) {
+        console.log('call updateRelation')
+        Meteor.call('updateRelation', {uuid1: uuid, relation: 15, uuid2: v}, true)
+      }
+    })
+    varsUuids.forEach(function(v) {
+      if(vars.indexOf(v) == -1)
+        Meteor.call('updateRelation', {uuid1: uuid, relation: 15, uuid2: v}, false)
+    })
+
     FlowRouter.go('/proposalsent?uuid='+uuid)
   },
   'click .resetConcept': function(e, templ) {
@@ -196,6 +271,16 @@ Template.editFormula.events({
   },
   'click .closeFEditor': function(e, templ) {
     templ.formulaEditor.set()
+  },
+  'click .removePartOf': function(e, templ) {
+    var po = templ.poUuids.get()
+    po.splice(po.indexOf(this.uuid), 1)
+    templ.poUuids.set(po)
+  },
+  'click .removeVar': function(e, templ) {
+    var po = templ.vUuids.get()
+    po.splice(po.indexOf(this.uuid), 1)
+    templ.vUuids.set(po)
   }
 })
 
@@ -207,8 +292,8 @@ Template.searchFormula2.onCreated(function() {
   var self = this
   this.autorun(function() {
     var text = self.letters.get()
-    var lang = sysLang.get()
-    if(lang && text && text.length > 2)
+    var lang = Template.currentData().lang || sysLang.get()
+    if(lang && text && (lang == 'unit' ? text.length : text.length > 2))
       $.getJSON(url + 'limit=' + maxFormCount*2 + '&lang=' + lang + '&text=' + text, function(data){
         self.result.set(data)
       })
@@ -227,6 +312,12 @@ Template.searchFormula2.events({
   'keyup .searchFormula': function(e, templ) {
     var t = templ.$(e.currentTarget)
     templ.letters.set(t.val())
+  },
+  'change .searchFormulaSelect': function(e, templ) {
+    console.log(Template.currentData())
+    console.log(templ.$('.searchFormulaSelect').val())
+    Template.currentData().output.set(templ.$('.searchFormulaSelect').val())
+    templ.$('.searchFormulaSelect').val('')
   }
 })
 

@@ -40,6 +40,12 @@ Meteor.publish('conceptCol', function(query, options) {
   return Concept.find(query, options)
 })
 
+Meteor.publish('term', function(uuid, langs) {
+  if(!(langs instanceof Array))
+    langs = [langs]
+  return Subject.find({uuid: uuid, lang: {$in: langs}})
+})
+
 Meteor.publishComposite('concept', function(query, options) {
   query = query || {}
   options = options || {}

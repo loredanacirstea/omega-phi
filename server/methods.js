@@ -43,21 +43,42 @@ Meteor.methods({
   countConcepts: function() {
     return Concept.find().count()
   },
-  updateSubject: function(obj, id) {
+  updateSubject: function(obj) {
     var u = Meteor.user()
     if(!u || !u.roles || !u.roles.editor || !u.emails || !u.emails[0].address)
-      return
+      throw new Meteor.Error('not-editor', 'The user must be an editor to be able to propose changes.')
 
     Subject2.insert(obj)
-    Concept2.insert({uuid: obj.uuid})
+    Concept2.upsert({uuid: obj.uuid}, {$set: {uuid: obj.uuid}})
 
+    if(!u.roles.admin) {
+      this.unblock()
+      sendEmail(adminEmail, 
+        'Omega Phi - New Proposal - ' + u.emails[0].address, 
+        'User: ' + u.profile.firstName + ' ' + u.profile.lastName + ' - ' + u.emails[0].address + '\n' +
+        'Proposal: ' + JSON.stringify(obj)
+      )
+    }
+  },
+  updateRelation: function(obj, insert) {
+    var u = Meteor.user()
+    if(!u || !u.roles || !u.roles.editor || !u.emails || !u.emails[0].address)
+      throw new Meteor.Error('not-editor', 'The user must be an editor to be able to propose changes.')
 
-    this.unblock()
-    sendEmail(adminEmail, 
-      'Omega Phi - New Proposal - ' + u.emails[0].address, 
-      'User: ' + u.profile.firstName + ' ' + u.profile.lastName + ' - ' + u.emails[0].address + '\n' +
-      'Proposal: ' + JSON.stringify(obj)
-    )
+    if(!insert)
+      obj.remove = true
+console.log('updateRelation: ' + JSON.stringify(obj))
+    Relation2.insert(obj)
+    Concept2.upsert({uuid: obj.uuid}, {$set: {uuid: obj.uuid1}})
+
+    if(!u.roles.admin) {
+      this.unblock()
+      sendEmail(adminEmail, 
+        'Omega Phi - New Proposal - ' + u.emails[0].address, 
+        'User: ' + u.profile.firstName + ' ' + u.profile.lastName + ' - ' + u.emails[0].address + '\n' +
+        'Proposal: ' + JSON.stringify(obj)
+      )
+    }
   },
   insertSubject: function(obj) {
     obj.uuid = uuid.v1()
@@ -74,12 +95,6 @@ Meteor.methods({
     obj.ontology = ontouuid
     obj.upd = new Date()
     Subject.insert(obj)
-  },
-  updateRelation: function(obj, id) {
-    Relation.update({_id: id}, {$set: obj})
-  },
-  insertRelation: function(obj) {
-    Relation.insert(obj)
   },
   removeSubject: function(id) {
     Subject.remove(id)
@@ -120,22 +135,39 @@ Meteor.methods({
   },
   saveProposal: function(id) {
     var prop = Subject2.findOne(id)
-    if(!prop)
-      return
-    // replace in original db with new author
-    Subject.update({uuid: prop.uuid, lang: prop.lang}, {$set: {subject: prop.subject, upd: prop.createdAt, author: prop.author}})
-    Concept.update({uuid: prop.uuid}, {$set: {upd: prop.createdAt}})
-    // set proposal as accepted
-    Subject2.update({_id: id}, {$set: {accepted: true}})
+    if(prop) {
+      // replace in original db with new author
+      Subject.update({uuid: prop.uuid, lang: prop.lang}, {$set: {subject: prop.subject, upd: prop.createdAt, author: prop.author}})
+      Concept.update({uuid: prop.uuid}, {$set: {upd: prop.createdAt}})
+      // set proposal as accepted
+      Subject2.update({_id: id}, {$set: {accepted: true}})
+    }
+    else {
+      prop = Relation2.findOne(id)
+      if(!prop) return
+
+      if(!prop.remove)
+        Relation.insert(prop)
+      else
+        Relation.remove({uuid1: prop.uuid1, uuid2: prop.uuid2, relation: prop.relation})
+      Concept.update({uuid: prop.uuid1}, {$set: {upd: prop.createdAt}})
+
+      // set proposal as accepted
+      Relation2.update({_id: id}, {$set: {accepted: true}})      
+    }
     // rate user
     Meteor.users.update({'emails.address': prop.author}, {$inc: {'profile.rating': 1}})
   },
   declineProposal: function(id) {
     var prop = Subject2.findOne(id)
-    if(!prop)
-      return
     // set proposal as declined
-    Subject2.update({_id: id}, {$set: {accepted: false}})
+    if(prop)
+      Subject2.update({_id: id}, {$set: {accepted: false}})
+    else {
+      prop = Relation2.findOne(id)
+      if(!prop) return
+      Relation2.update({_id: id}, {$set: {accepted: false}})
+    }
     // rate user
     Meteor.users.update({'emails.address': prop.author}, {$inc: {'profile.rating': -1}})
   }

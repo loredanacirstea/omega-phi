@@ -3,15 +3,25 @@
     <ul class="table-view">
       {{#each proposal1}}
         <li class="table-view-cell {{status}}">
-          {{original}} -> {{subject}} -> {{author}}
-          <a class="btn" data-ignore="push" href="/admin/props/{{uuid}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+          {{#if sub1}}
+            {{sub1.subject}} - {{relationtype relation}} {{#if remove}}(-){{/if}} {{sub2.subject}} -> {{author}}
+            <a class="btn" data-ignore="push" href="/admin/props/{{uuid1}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+          {{else}}
+            {{original}} -> {{subject}} -> {{author}}
+            <a class="btn" data-ignore="push" href="/admin/props/{{uuid}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+          {{/if}}
         </li>
       {{/each}}
       <li class="table-view-divider">{{lastTimestamp}}</li>
       {{#each proposal2}}
         <li class="table-view-cell {{status}}">
-          {{original}} -> {{subject}} -> {{author}}
-          <a class="btn" data-ignore="push" href="/admin/props/{{uuid}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+          {{#if sub1}}
+            {{sub1.subject}} - {{relationtype relation}} {{#if remove}}(-){{/if}} {{sub2.subject}} -> {{author}}
+            <a class="btn" data-ignore="push" href="/admin/props/{{uuid1}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+          {{else}}
+            {{original}} -> {{subject}} -> {{author}}
+            <a class="btn" data-ignore="push" href="/admin/props/{{uuid}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+          {{/if}}
         </li>
       {{/each}}
     </ul>
@@ -27,24 +37,22 @@
 
           <li class="table-view-divider">Part Of</li>
           {{#each partof}}
-            <li class="table-view-cell">
+            <li class="table-view-cell {{prop}} {{remove}}">
               {{subject}}
             </li>
           {{/each}}
 
           <li class="table-view-divider">Formula</li>
-          {{#with formulaSubject}}
-            <li class="table-view-cell {{prop}}">`{{{msy.subject}}} = {{{mfr.subject}}}`</li>
-          {{/with}}
+          <li class="table-view-cell formulaProposal_{{this}}"></li>
+          {{formulaSubject}}
 
           <li class="table-view-divider">Unit</li>
-          {{#with unit}}
-            <li class="table-view-cell unitSubject" data-uuid="{{uuid}}">`{{{subject}}}`</li>
-          {{/with}}
+          <li class="table-view-cell unitProposal_{{this}}"></li>
+          {{unit}}
 
           <li class="table-view-divider">Variables</li>
           {{#each variables}}
-            <li class="table-view-cell">
+            <li class="table-view-cell {{prop}} {{remove}}">
               {{subject}}
             </li>
           {{/each}}

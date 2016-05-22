@@ -33,12 +33,7 @@ subjectro.ss.subject = new SimpleSchema({
     autoValue: function() {
       if(this.value)
         return this.value
-      if (this.isUpdate)
-        return new Date();
-      if (this.isInsert)
-        return new Date();
-      if (this.isUpsert)
-        return {$setOnInsert: new Date()};
+      return new Date()
     }
   },
   createdAt: {
@@ -101,7 +96,8 @@ subjectro.ss.relation = new SimpleSchema({
   },
   ordering: {
     type: Number,
-    label: "Ordering"
+    label: "Ordering",
+    optional: true
   },
   ontology: {
     type: String,
@@ -117,12 +113,7 @@ subjectro.ss.relation = new SimpleSchema({
     autoValue: function() {
       if(this.value)
         return this.value
-      if (this.isUpdate)
-        return new Date();
-      if (this.isInsert)
-        return new Date();
-      if (this.isUpsert)
-        return {$setOnInsert: new Date()};
+      return new Date()
     }
   },
   createdAt: {
@@ -135,6 +126,24 @@ subjectro.ss.relation = new SimpleSchema({
         return {$setOnInsert: new Date()};
 
       this.unset();  // Prevent user from supplying their own value
+    }
+  },
+  author: {
+    type: String,
+    label: 'Author Email',
+    optional: true,
+    autoValue: function() {
+      var u = Meteor.user()
+      var em
+      if(u && u.emails && u.emails[0])
+        em = u.emails[0].address
+      if(this.isInsert)
+        return em
+        
+      if(this.isUpdate && this.value && u.roles && u.roles.admin)
+        return this.value
+
+      this.unset()
     }
   }
 })

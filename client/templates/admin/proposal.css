@@ -6,6 +6,10 @@
   background-color: RGBA(0, 122, 255, 0.5);
 }
 
+.remove {
+  text-decoration: line-through;
+}
+
 .accepted {
   background-color: RGBA(0, 122, 255, 0.2);
 }
