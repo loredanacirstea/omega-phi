@@ -17,10 +17,7 @@
       "win32.installer": "/download/win/OmegaPhiWin.exe",
       "darwin": "/download/osx/OmegaPhiOSX.zip"
     },
-    "builds": [
-      {"platform": "win32",
-       "arch": "ia32"}
-    ],
     "autoBuild": false
   }
 }
+ 

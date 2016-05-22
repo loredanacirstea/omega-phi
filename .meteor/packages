@@ -47,7 +47,7 @@ ecwyne:mathjs
 
 # desktop
 #arboleya:electrify
-meson:electron
+# meson:electron
 
 # android:
 #meteor add cordova:org.apache.cordova.inappbrowser@1.4.0

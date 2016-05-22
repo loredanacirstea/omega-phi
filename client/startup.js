@@ -10,7 +10,6 @@ Meteor.startup(() => {
       var link = $(e.target).closest('a[href]')
       if(link.length > 0) {
         url = link.attr('href')
-        console.log(url)
         if(!(typeof url == 'string' && url.indexOf('://') >= 0))
           return
         cordova.InAppBrowser.open(url, '_system')
