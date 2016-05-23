@@ -1,7 +1,24 @@
-OmegaPhi
+Omega Phi
 =========
 
-Physics formulas - browsing, searching, problem solver
+Goals
+-------
+
+Create the biggest open data Physics formula database in multiple languages.
+
+Create a complex cross-platform Physics problem solver with linked formulas. 
+
+
+Current Stage
+---------------
+
+- 900 Physics formulas browser with searching capabilities
+- 150 formulas (starred) have a problem solver feature, which permits fast result calculations.
+- available languages: English and Romanian. Translatable in any other languages by volunteers.
+- editing module has been started and you can modify the existing data.
+
+Cross-Platform
+-----------------
 
 Web App: http://orobo.go.ro:5500
 
@@ -11,16 +28,19 @@ Mac OS X: http://orobo.go.ro:5500/download/osx/OmegaPhiOSX.zip
 
 Windows: http://orobo.go.ro:5500/download/win/Omega%20Phi-win32-ia32.zip
 
-1 minute video demo:
-https://www.youtube.com/watch?v=OUDcfJwGIgA
 
-how to edit formulas:
-https://www.youtube.com/watch?v=1uDQFt25oMc
+Tutorials
+------------
+
+- how to use: https://www.youtube.com/watch?v=OUDcfJwGIgA
+
+- how to edit formulas: https://www.youtube.com/watch?v=1uDQFt25oMc
+
 
 Version
-----
+--------
 
-Ver. 0.2.1
+Ver. 0.2.2
 
 License
 =========
@@ -46,12 +66,18 @@ see [ODbL.txt](/ODbL.txt)
 Want to help?
 =========
 
-We welcome volunteers. Use the email from my GitHub profile if you are not sure what to do (email subject: Omega Phi)
+We welcome volunteers. 
+
+You can start by correcting/translating/adding new formulas through our app. Check out our editing formulas tutorial from above.
+
+Use the email from my GitHub profile if you are not sure what to do (email subject: Omega Phi)
+
 
 Plans
-----
+------
 
-Code-wise: app will be re-written to use React instead of Blaze
+- module for adding new formulas
+- showing the editor's credentials for each formula
+- showing contributor ratings 
 
-Data-wise: we plan on having a version with formula editing capabilities, so anyone can contribute.
 
