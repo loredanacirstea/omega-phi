@@ -50,24 +50,20 @@ Meteor.publishComposite('concept', function(query, options) {
   query = query || {}
   options = options || {}
   options.sort = {upd: 1}
-  //console.log('publish concept; query: ' + JSON.stringify(query) + '; options: ' + JSON.stringify(options))
 
   return {
     find: function() {
-      //console.log('publish concepts: ' + Concept.find(query, options).fetch().length)
       return Concept.find(query, options)
     },
     children: [
       {
         find: function(c) {
-          //console.log('publish concept subs: ' + Subject.find({uuid: c.uuid}).fetch().length)
           return Subject.find({uuid: c.uuid})
         },
         children: [
           // All relations
           {
             find: function(s) {
-              //console.log('publish concept rels: ' + Relation.find({uuid1: s.uuid}).fetch().length)
               return Relation.find({uuid1: s.uuid})
             },
             // And Subjects with which relations exist
@@ -75,7 +71,6 @@ Meteor.publishComposite('concept', function(query, options) {
               {
                 find: function(r, s) {
                   var uuid = r.uuid1 == s.uuid ? r.uuid2 : r.uuid1
-                  //console.log('publish concept rels kids: ' + Subject.find({uuid: uuid}).fetch().length)
                   return Subject.find({uuid: uuid})
                 }
               }

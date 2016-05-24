@@ -2,6 +2,10 @@ Template.registerHelper('equals', function(a, b) {
   return a == b;
 })
 
+Template.registerHelper('or', function(a,b) {
+  return a || b
+})
+
 Template.registerHelper('log', function(a) {
   return console.log(a)
 })

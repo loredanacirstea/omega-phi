@@ -27,24 +27,25 @@
             </li>
           {{/if}}
         {{/with}}
-      
-      <li class="table-view-divider">Unit</li>
-      <li class="table-view-cell unitSubject"></li>
-      {{#if unit}} {{/if}}
-      <li class="table-view-cell">
-        {{> searchFormula2 output=uresult lang='unit'}}
-      </li>
-      <li class="table-view-divider">Variables</li>
-      {{#each variables}}
+      {{#if isNotUnit}}
+        <li class="table-view-divider">Unit</li>
+        <li class="table-view-cell unitSubject"></li>
+        {{#if unit}} {{/if}}
         <li class="table-view-cell">
-          {{subject}}
-          <a href="/edit/{{uuid}}" data-ignore="push" class="btn" style="right:65px !important;"><span class="icon icon-edit buttonIcon"></span></a>
-          <button class="btn removeVar"><span class="icon icon-close buttonIcon"></span></button>
+          {{> searchFormula2 output=uresult lang='unit'}}
         </li>
-      {{/each}}
-      <li class="table-view-cell">
-        {{> searchFormula2 output=vresult}}
-      </li>
+        <li class="table-view-divider">Variables</li>
+        {{#each variables}}
+          <li class="table-view-cell">
+            {{subject}}
+            <a href="/edit/{{uuid}}" data-ignore="push" class="btn" style="right:65px !important;"><span class="icon icon-edit buttonIcon"></span></a>
+            <button class="btn removeVar"><span class="icon icon-close buttonIcon"></span></button>
+          </li>
+        {{/each}}
+        <li class="table-view-cell">
+          {{> searchFormula2 output=vresult}}
+        </li>
+      {{/if}}
       <li class="table-view-divider">En</li>
       <li class="table-view-cell">
         {{#with enSubject}}

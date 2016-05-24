@@ -8,7 +8,16 @@
             {{/each}}
             <a href="/browse/{{uuid}}" data-ignore="push"><strong>{{description}}</strong></a>
             {{# if isRole 'editor'}}
-              <a href="/edit/{{uuid}}" class="btn" style="right:80px !important; font-size: 20px !important;" data-ignore="push">
+              {{#if isUnit}}
+                <a href="/edit?partof={{uuid}}&lang=unit" class="btn" style="right:140px !important; font-size: 20px !important;" data-ignore="push">
+                  <span class="icon icon-plus"></span>
+                </a>
+              {{else}}
+                <a href="/edit?partof={{uuid}}" class="btn" style="right:140px !important; font-size: 20px !important;" data-ignore="push">
+                  <span class="icon icon-plus"></span>
+                </a>
+              {{/if}}
+              <a href="/edit/{{uuid}}" class="btn" style="right:85px !important; font-size: 20px !important;" data-ignore="push">
                 <span class="icon icon-edit"></span>
               </a>
             {{/if}}

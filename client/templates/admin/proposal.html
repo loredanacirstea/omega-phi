@@ -3,12 +3,22 @@
     <ul class="table-view">
       {{#each proposal1}}
         <li class="table-view-cell {{status}}">
-          {{#if sub1}}
-            {{sub1.subject}} - {{relationtype relation}} {{#if remove}}(-){{/if}} {{sub2.subject}} -> {{author}}
-            <a class="btn" data-ignore="push" href="/admin/props/{{uuid1}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+          {{#if or sub1.subject sub2.subject}}
+            {{#if sub1._id}}
+              {{sub1.subject}} - {{relationtype relation}} {{#if remove}}(-){{/if}} {{sub2.subject}} -> {{author}}
+              <a class="btn" data-ignore="push" href="/admin/props/{{uuid1}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+            {{else}}
+              <span class="new">new:</span> {{relationtype relation}} {{#if remove}}(-){{/if}} {{sub2.subject}} -> {{author}}
+              <a class="btn" data-ignore="push" href="/admin/props/{{uuid1}}?id={{_id}}&insert=true"><span class="icon icon-edit buttonIcon"></span></a>
+            {{/if}}
           {{else}}
-            {{original}} -> {{subject}} -> {{author}}
-            <a class="btn" data-ignore="push" href="/admin/props/{{uuid}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+            {{#if original}}
+              {{original}} -> {{subject}} -> {{author}}
+              <a class="btn" data-ignore="push" href="/admin/props/{{uuid}}?id={{_id}}"><span class="icon icon-edit buttonIcon"></span></a>
+            {{else}}
+              <span class="new">new:</span> {{lang}} -> {{subject}} -> {{author}}
+              <a class="btn" data-ignore="push" href="/admin/props/{{uuid}}?id={{_id}}&insert=true"><span class="icon icon-edit buttonIcon"></span></a>
+            {{/if}}
           {{/if}}
         </li>
       {{/each}}
@@ -44,6 +54,7 @@
 
           <li class="table-view-divider">Formula</li>
           <li class="table-view-cell formulaProposal_{{this}}"></li>
+          {{log this}}
           {{formulaSubject}}
 
           <li class="table-view-divider">Unit</li>

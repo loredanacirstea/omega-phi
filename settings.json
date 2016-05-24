@@ -5,7 +5,7 @@
       "darwin": "public/electron-icons/omega-phi3.icns",
       "win32": "public/electron-icons/omega-phi3.ico"
     },
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "Physics formulas - browsing, searching, problem solver",
     "rootUrl": "http://orobo.go.ro:5500",
     "height": 768,

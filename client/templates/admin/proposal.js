@@ -11,19 +11,24 @@ Template.adminProposals.helpers({
   },
   proposal1: function() {
     var c = Concept.findOne({}, {sort: {upd: -1}})
-    if(c)
-      return Subject2.find({createdAt: {$gt: c.upd}}, {sort: {upd: -1}}).fetch().concat(
-        Relation2.find({createdAt: {$gt: c.upd}}, {sort: {upd: -1}}).map(function(r) {
-          r.sub1 = Subject.findOne({uuid: r.uuid1, lang: sysLang.get()})
-          r.sub2 = Subject.findOne({uuid: r.uuid2, lang: sysLang.get()})
+    if(c) {
+      var props = Subject2.find({createdAt: {$gt: c.upd}}).fetch().concat(
+        Relation2.find({createdAt: {$gt: c.upd}}).map(function(r) {
+          r.sub1 = Subject.findOne({uuid: r.uuid1, lang: sysLang.get()}) || {}
+          r.sub2 = Subject.findOne({uuid: r.uuid2, lang: sysLang.get()}) || {}
           return r
         })
       )
+      props.sort(function(a,b) {
+        return new Date(a.upd).getTime() < new Date(b.upd).getTime()
+      })
+      return props
+    }
   },
   proposal2: function() {
     var c = Concept.findOne({}, {sort: {upd: -1}})
-    if(c)
-      return Subject2.find({$or: [
+    if(c) {
+      var props = Subject2.find({$or: [
         {createdAt: c.upd},
         {createdAt: {$lt: c.upd}}
         ]}, {sort: {upd: -1}}).fetch().concat(
@@ -36,6 +41,11 @@ Template.adminProposals.helpers({
           return r
         })
       )
+      props.sort(function(a,b) {
+        return new Date(a.upd).getTime() < new Date(b.upd).getTime()
+      })
+      return props
+    }
   },
   original: function() {
     var s = Subject.findOne({uuid: this.uuid, lang: this.lang})
@@ -81,6 +91,8 @@ Template.adminProposal.onCreated(function() {
     self.pathSub = PathSubs.subscribe('path', uuid, lang)
     self.kidsSub = KidsSubs.subscribe('kids', uuid, [lang], {limit: 50})
     self.subscribe('proposal', id, lang)
+    if(FlowRouter.getQueryParam('insert'))
+      self.subscribe('concept2', id)
   })
 
   this.autorun(function() {
@@ -133,25 +145,31 @@ Template.adminProposal.helpers({
   formulaSubject: function() {
     var uuid = routeUuid.get(), 
       proposal = Template.instance().proposal.get(),
-      msy, mfr,
-      q = $('.formulaProposal_'+this.valueOf())
+      msy, mfr, q,
+      self = this
 
-    if(this.valueOf() == 'p' && proposal) {
-      if(proposal.lang == 'msy')
-        msy = proposal
-      if(proposal.lang == 'mfr')
-        mfr = proposal
-      if(msy || mfr)
-        q.addClass('prop')
-    }
-    if(!msy)
-      msy = Subject.findOne({uuid: uuid, lang: 'msy'}) || {}
-    if(!mfr)
-      mfr = Subject.findOne({uuid: uuid, lang: 'mfr'}) || {}
+    Meteor.setTimeout(function() {
+      q = $('.formulaProposal_'+self.valueOf())
+      if(self.valueOf() == 'p' && proposal) {
+        if(proposal.lang == 'msy' || proposal.lang == 'unit')
+          msy = proposal
+        if(proposal.lang == 'mfr')
+          mfr = proposal
+        if(msy || mfr)
+          q.addClass('prop')
+      }
+      if(!msy)
+        msy = Subject.findOne({uuid: uuid, lang: 'msy'}) || 
+          Subject.findOne({uuid: uuid, lang: 'unit'}) || {}
+      if(!mfr)
+        mfr = Subject.findOne({uuid: uuid, lang: 'mfr'}) || {}
 
-    var inner = "`" + msy.subject + '=' + mfr.subject + "`"
-    q.html(inner)
-    MathJax.Hub.Typeset(q[0])
+      if(msy.subject || mfr.subject) {
+        var inner = "`" + (msy.subject || '') + '=' + (mfr.subject || '') + "`"
+        q.html(inner)
+        MathJax.Hub.Typeset(q[0])
+      }
+    }, 1000)
   },
   unit: function() {
     var r, 

@@ -53,15 +53,16 @@ subjectro.ss.subject = new SimpleSchema({
     label: 'Author Email',
     optional: true,
     autoValue: function() {
-      var u = Meteor.user()
-      var em
+      var u = Meteor.user(), em
+
+      if(this.value && u && u.roles && u.roles.admin)
+        return this.value
+
       if(u && u.emails && u.emails[0])
         em = u.emails[0].address
-      if(this.isInsert)
+      
+      if(this.isInsert && em)
         return em
-        
-      if(this.isUpdate && this.value && u.roles && u.roles.admin)
-        return this.value
 
       this.unset()
     }
@@ -133,15 +134,16 @@ subjectro.ss.relation = new SimpleSchema({
     label: 'Author Email',
     optional: true,
     autoValue: function() {
-      var u = Meteor.user()
-      var em
+      var u = Meteor.user(), em
+
+      if(this.value && u && u.roles && u.roles.admin)
+        return this.value
+
       if(u && u.emails && u.emails[0])
         em = u.emails[0].address
-      if(this.isInsert)
+      
+      if(this.isInsert && em)
         return em
-        
-      if(this.isUpdate && this.value && u.roles && u.roles.admin)
-        return this.value
 
       this.unset()
     }

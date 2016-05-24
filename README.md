@@ -40,7 +40,7 @@ Tutorials
 Version
 --------
 
-Ver. 0.2.2
+Ver. 0.2.3
 
 License
 =========

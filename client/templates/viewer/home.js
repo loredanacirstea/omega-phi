@@ -23,7 +23,7 @@ Template.formulaDetails.onCreated(function() {
       return
     self.conceptSub = ConceptSubs.subscribe('concept', {uuid: uuid})
     self.pathSub = PathSubs.subscribe('path', uuid, lang)
-    self.kidsSub = KidsSubs.subscribe('kids', uuid, ['msy', 'mfr', lang], {limit: 50})
+    self.kidsSub = KidsSubs.subscribe('kids', uuid, ['msy', 'mfr', lang, 'unit'], {limit: 50})
     self.varsSub = VarsSubs.subscribe('vars', uuid, ['msy', 'mfr', lang])
   })
 })
@@ -86,27 +86,41 @@ Template.formulaDetails.helpers({
       })
     }
   },
+  isUnit: function() {
+    var uuid = routeUuid.get()
+    if(!uuid) return
+    var uuids = getPath(uuid)
+    if(uuids.indexOf(unitsUuid) != -1)
+      return true
+    return false
+  },
   formulas: function() {
     var uuid = routeUuid.get()
     if(!uuid) return
     var lang = sysLang.get()
     if(!lang) return
+    var roles = userRoles.get()
     var fs = [], ids =[], obj
     Relation.find({uuid2: uuid, relation: 1}).forEach(function(r) {
       if(ids.indexOf(r._id) != -1)
         return
-      if(r.uuid1 == unitsUuid)
+      if(r.uuid1 == unitsUuid && !roles['editor'])
         return
       ids.push(r._id)
-      var mfr = Subject.findOne({uuid: r.uuid1, lang: 'mfr'})
-      var msy = Subject.findOne({uuid: r.uuid1, lang: 'msy'})
-      var kids = Relation.findOne({uuid2: r.uuid1, relation: 1})
-      if((!msy && kids) || (msy && mfr)) {
-        obj = Subject.findOne({uuid: r.uuid1, lang: lang}) || {}
-        obj.vars = Relation.findOne({uuid1: r.uuid1, relation: 15})
-        obj.msy = msy
-        obj.mfr = mfr
-        fs.push(obj)
+      var unit = Subject.findOne({uuid: r.uuid1, lang: 'unit'})
+      if(unit)
+        fs.push(unit)
+      else {
+        var mfr = Subject.findOne({uuid: r.uuid1, lang: 'mfr'})
+        var msy = Subject.findOne({uuid: r.uuid1, lang: 'msy'})
+        var kids = Relation.findOne({uuid2: r.uuid1, relation: 1})
+        if((!msy && kids) || (msy && mfr)) {
+          obj = Subject.findOne({uuid: r.uuid1, lang: lang}) || {}
+          obj.vars = Relation.findOne({uuid1: r.uuid1, relation: 15})
+          obj.msy = msy
+          obj.mfr = mfr
+          fs.push(obj)
+        }
       }
     })
     return fs

@@ -17,3 +17,7 @@
 .denied {
   background-color: RGBA(197, 84, 88, 0.2);
 }
+
+.new {
+  color: RGBA(0, 122, 255, 1);
+}

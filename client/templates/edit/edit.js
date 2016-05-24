@@ -1,3 +1,4 @@
+var uuidGen = uuid
 Template.editFormula.onCreated(function() {
   Meteor.call('isEditor', function(err, res) {
     if(err) console.log(err)
@@ -26,6 +27,16 @@ Template.editFormula.onCreated(function() {
     self.kidsSub = KidsSubs.subscribe('kids', uuid, [lang], {limit: 50})
   })
 
+  // when adding a new formula
+  this.autorun(function() {
+    var partof = FlowRouter.getQueryParam('partof')
+    if(!partof)
+      return
+    Meteor.subscribe('term', partof, sysLang.get())
+    self.poUuids.set([partof])
+    console.log(self.poUuids.get())
+  })
+
   this.autorun(function() {
     var po = Relation.find({uuid1: routeUuid.get(), relation: 1}).map(function(r) {
       return r.uuid2
@@ -42,7 +53,6 @@ Template.editFormula.onCreated(function() {
 
   this.autorun(function() {
     var po = self.poresult.get()
-    console.log(po)
     if(po)
       Tracker.nonreactive(function() {
         var pos = self.poUuids.get()
@@ -53,7 +63,6 @@ Template.editFormula.onCreated(function() {
   })
   this.autorun(function() {
     var po = self.uresult.get()
-    console.log(po)
     if(po) {
       self.uUuid.set(po)
       Meteor.subscribe('term', po, 'unit')
@@ -61,7 +70,6 @@ Template.editFormula.onCreated(function() {
   })
   this.autorun(function() {
     var po = self.vresult.get()
-    console.log(po)
     if(po)
       Tracker.nonreactive(function() {
         var pos = self.vUuids.get()
@@ -113,7 +121,11 @@ Template.editFormula.helpers({
   vresult: function() {
     return Template.instance().vresult
   },
+  isNotUnit: function() {
+    return FlowRouter.getQueryParam('lang') != 'unit'
+  },
   partof: function() {
+    console.log(Subject.find({uuid: {$in: Template.instance().poUuids.get()}, lang: sysLang.get()}).fetch())
     return Subject.find({uuid: {$in: Template.instance().poUuids.get()}, lang: sysLang.get()}).fetch()
   },
   formulaSubject: function() {
@@ -170,6 +182,7 @@ Template.editFormula.helpers({
     if(!uuid) return
     var lang = sysLang.get()
     if(!lang) return
+    var roles = userRoles.get()
     var fs = [], ids =[], obj
     Relation.find({uuid2: uuid, relation: 1}).forEach(function(r) {
       if(ids.indexOf(r._id) != -1)
@@ -188,6 +201,8 @@ Template.editFormula.helpers({
 Template.editFormula.events({
   'click .saveConcept': function(e, templ) {
     var uuid = routeUuid.get()
+    if(!uuid)
+      uuid = uuidGen.v1()
 
     var f = templ.$('.formulaSubjectSpan'),
       msy = f.data('msy'),
@@ -204,10 +219,17 @@ Template.editFormula.events({
       wikid = templ.$('.wikiSubject').data('id'),
       wikis = Subject.findOne({uuid: uuid, lang: 'wiki'})
 
-    if(msy && msy != '' && (!msys || msys.subject != msy))
-      Meteor.call('updateSubject', {uuid: uuid, lang: 'msy', subject: msy}, msys._id, function(err, res) {
-        if(err) console.log(err)
-      })
+
+    if(msy && msy != '' && (!msys || msys.subject != msy)) {
+      if(FlowRouter.getQueryParam('lang') == 'unit')
+        Meteor.call('updateSubject', {uuid: uuid, lang: 'unit', subject: msy}, msys._id, function(err, res) {
+          if(err) console.log(err)
+        })
+      else
+        Meteor.call('updateSubject', {uuid: uuid, lang: 'msy', subject: msy}, msys._id, function(err, res) {
+          if(err) console.log(err)
+        })
+    }
     if(mfr && mfr != '' && (!mfrs || mfrs.subject != mfr))
       Meteor.call('updateSubject', {uuid: uuid, lang: 'mfr', subject: mfr}, mfrs._id, function(err, res) {
         if(err) console.log(err)
@@ -252,7 +274,6 @@ Template.editFormula.events({
     }
     vars.forEach(function(v) {
       if(varsUuids.indexOf(v) == -1) {
-        console.log('call updateRelation')
         Meteor.call('updateRelation', {uuid1: uuid, relation: 15, uuid2: v}, true)
       }
     })
@@ -314,8 +335,6 @@ Template.searchFormula2.events({
     templ.letters.set(t.val())
   },
   'change .searchFormulaSelect': function(e, templ) {
-    console.log(Template.currentData())
-    console.log(templ.$('.searchFormulaSelect').val())
     Template.currentData().output.set(templ.$('.searchFormulaSelect').val())
     templ.$('.searchFormulaSelect').val('')
   }

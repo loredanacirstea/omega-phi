@@ -134,11 +134,18 @@ console.log('updateRelation: ' + JSON.stringify(obj))
     Relation.remove({uuid1: uuid1, uuid2: {$nin: uu}, relation: rel})
   },
   saveProposal: function(id) {
+    var u = Meteor.user()
+    if(!u || !u.roles || !u.roles.admin)
+      throw new Meteor.Error('not-admin', 'The user must be an admin to be able to accept proposals.')
+
     var prop = Subject2.findOne(id)
     if(prop) {
       // replace in original db with new author
-      Subject.update({uuid: prop.uuid, lang: prop.lang}, {$set: {subject: prop.subject, upd: prop.createdAt, author: prop.author}})
-      Concept.update({uuid: prop.uuid}, {$set: {upd: prop.createdAt}})
+      Subject.upsert({uuid: prop.uuid, lang: prop.lang}, {$set: {uuid: prop.uuid, lang: prop.lang, subject: prop.subject, upd: prop.createdAt, author: prop.author}})
+      var setc = {uuid: prop.uuid, upd: prop.createdAt}
+      if(prop.lang == 'unit')
+        setc.type = 3;
+      Concept.upsert({uuid: prop.uuid}, {$set: setc})
       // set proposal as accepted
       Subject2.update({_id: id}, {$set: {accepted: true}})
     }
@@ -146,11 +153,18 @@ console.log('updateRelation: ' + JSON.stringify(obj))
       prop = Relation2.findOne(id)
       if(!prop) return
 
-      if(!prop.remove)
+      Concept.upsert({uuid: prop.uuid1}, {$set: {uuid: prop.uuid1, upd: prop.createdAt}})
+
+      if(!prop.remove) {
         Relation.insert(prop)
+        if(prop.relation == 1)
+          Concept.update({uuid: prop.uuid2}, {$set: {type: 1}})
+        else if(prop.relation == 15)
+          Concept.update({uuid: prop.uuid1}, {$set: {solver: true}})
+      }
       else
         Relation.remove({uuid1: prop.uuid1, uuid2: prop.uuid2, relation: prop.relation})
-      Concept.update({uuid: prop.uuid1}, {$set: {upd: prop.createdAt}})
+      
 
       // set proposal as accepted
       Relation2.update({_id: id}, {$set: {accepted: true}})      
@@ -159,6 +173,11 @@ console.log('updateRelation: ' + JSON.stringify(obj))
     Meteor.users.update({'emails.address': prop.author}, {$inc: {'profile.rating': 1}})
   },
   declineProposal: function(id) {
+    var u = Meteor.user()
+    if(!u || !u.roles || !u.roles.admin)
+      throw new Meteor.Error('not-admin', 'The user must be an admin to be able to reject proposals.')
+
+
     var prop = Subject2.findOne(id)
     // set proposal as declined
     if(prop)
