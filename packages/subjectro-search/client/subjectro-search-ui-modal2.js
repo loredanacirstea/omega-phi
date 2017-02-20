@@ -1,18 +1,18 @@
-var langs = { 
+var langs = {
     'en': { 'en': 'English', 'ro': 'Romanian', 'code':'Code'},
     'ro': { 'en': 'Engleza', 'ro': 'Romana', 'code': 'Cod'},
     'code': { 'en': 'English', 'ro': 'Romanian', 'code': 'Code'}
 }
 
 var lang = 'en'
-var host = 'http://orobo.go.ro:5500'
+var host = Meteor.absoluteUrl();
 var baseurl = host + '/api/subject/search?limit=15'
 var selected
 
 Template.subjectroSearchModal2.onRendered(function() {
   //setLangChooser(lang)
   //setSubject(lang)
-  
+
   Meteor.setTimeout(function() {
     $('.showModal.sr').on('click', showModal)
     $('#subjectroChooserInput').on('keyup', setDropdown)
@@ -41,7 +41,7 @@ function setLangChooser (language) {
         lang = $(e.currentTarget).val()
         //setSubject(lang)
     })
-    
+
     console.info("Language chooser set.")
 }
 
@@ -89,7 +89,7 @@ function setSubject(language, elem) {
             $(this).siblings('div.sr.viz').html(res.join(','))
         })
     })
-    
+
 }
 
 function simpleDrop(parent) {
@@ -137,7 +137,7 @@ function showModal(e) {
                         console.log(ed.target.getContent())
                         ed.target.setContent(cont);
                         tinymce.execCommand('mceRepaint');
-                        
+
                         console.log(ed.target.getContent())
                     });
                 }*/
@@ -171,12 +171,12 @@ function showModal(e) {
         $('#subjectroSVG').remove
     $('#subjectroChooserInput>input').val('')
     setSelected(e)
-    $('#subjectroChooserModal').modal('show')   
+    $('#subjectroChooserModal').modal('show')
     $('.dropdown').dropdown()
 }
 
 function setDropdown(e) {
-    
+
     var val = $('#subjectroChooserInput>input').val()
     //console.log(val)
     var lg = selected.data('lang')
