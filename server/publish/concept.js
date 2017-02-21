@@ -114,8 +114,8 @@ Meteor.publishComposite('kids', function(uuid, langs, options) {
           var ids = Relation.find({uuid2: r.uuid1, relation: 1}).map(function(rr) {
             return rr.uuid1
           })
-          if(Concept.findOne({ 
-            uuid: {$in: ids}, 
+          if(Concept.findOne({
+            uuid: {$in: ids},
             type: {$exists: 1}
           }))
             return Relation.find({uuid2: r.uuid1, relation: 1}, {limit: 1})
@@ -177,7 +177,7 @@ Meteor.publishComposite('vars', function(uuid, langs) {
 var recurs = 0
 getPath = function(uuid){
   var uuids = {path: [], rels: []}, rel, id = uuid;
-  while(id != physicsUuid && recurs < 100){
+  while(id != ontouuid && recurs < 100){
     recurs ++
     rel = Relation.findOne({uuid1:id, relation: 1})
     if(rel) {
@@ -191,4 +191,3 @@ getPath = function(uuid){
   recurs = 0
   return uuids;
 }
-

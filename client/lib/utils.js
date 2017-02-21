@@ -73,7 +73,7 @@ var recurs = 0
 getPath = function(uuid){
   //console.log('getPath uuid: ' + uuid)
   var path = [], rel, id = uuid;
-  while(id != physicsUuid && recurs < 100){
+  while(id != ontouuid && recurs < 100){
     recurs ++
     //console.log('id: ' + id)
     rel = Relation.findOne({uuid1:id, relation: 1})
