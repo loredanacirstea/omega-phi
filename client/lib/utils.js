@@ -29,6 +29,10 @@ Template.registerHelper('sysLang', function(l) {
   return false
 })
 
+Template.registerHelper('serverUrl', function() {
+  return serverUrl;
+});
+
 firstUpper = function(a) {
   return a[0].toUpperCase() + a.substring(1)
 }

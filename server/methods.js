@@ -34,8 +34,8 @@ Meteor.methods({
     Meteor.users.update({_id: userId}, {$set: set})
 
     this.unblock()
-    sendEmail(user.emails[0].address, 
-      'Omega Phi - ' + (state ? 'Added as ' : 'No longer ') + role, 
+    sendEmail(user.emails[0].address,
+      'Omega Phi - ' + (state ? 'Added as ' : 'No longer ') + role,
       'Dear ' + user.profile.firstName + ' ' + user.profile.lastName + ',' + '\n\n' +
       'We have ' + (state ? 'added you as a new ' : 'removed your role as ') + role + '.'
     )
@@ -44,17 +44,25 @@ Meteor.methods({
     return Concept.find().count()
   },
   updateSubject: function(obj) {
-    var u = Meteor.user()
-    if(!u || !u.roles || !u.roles.editor || !u.emails || !u.emails[0].address)
-      throw new Meteor.Error('not-editor', 'The user must be an editor to be able to propose changes.')
+    var u = Meteor.user();
+    if(!u || !u.roles || !u.roles.editor || !u.roles.admin || !u.emails || !u.emails[0].address) {
+      throw new Meteor.Error('not-editor', 'The user must be an editor to be able to propose changes.');
+    }
 
-    Subject2.insert(obj)
-    Concept2.upsert({uuid: obj.uuid}, {$set: {uuid: obj.uuid}})
+    if(u.roles.admin) {
+      // We save directly in the official dbs
+      updateSubject(obj);
+      // Also save as an accepted proposal
+      obj.accepted = true;
+    }
+
+    Subject2.insert(obj);
+    Concept2.upsert({uuid: obj.uuid}, {$set: {uuid: obj.uuid}});
 
     if(!u.roles.admin) {
       this.unblock()
-      sendEmail(adminEmail, 
-        'Omega Phi - New Proposal - ' + u.emails[0].address, 
+      sendEmail(adminEmail,
+        'Omega Phi - New Proposal - ' + u.emails[0].address,
         'User: ' + u.profile.firstName + ' ' + u.profile.lastName + ' - ' + u.emails[0].address + '\n' +
         'Proposal: ' + JSON.stringify(obj)
       )
@@ -67,14 +75,26 @@ Meteor.methods({
 
     if(!insert)
       obj.remove = true
-console.log('updateRelation: ' + JSON.stringify(obj))
+
+    if(u.roles.admin) {
+      // We save directly in the official dbs
+      if(!obj.remove) {
+        updateRelation(obj);
+      }
+      else {
+        removeRelation(obj);
+      }
+      // Also save as an accepted proposal
+      obj.accepted = true;
+    }
+
     Relation2.insert(obj)
     Concept2.upsert({uuid: obj.uuid}, {$set: {uuid: obj.uuid1}})
 
     if(!u.roles.admin) {
       this.unblock()
-      sendEmail(adminEmail, 
-        'Omega Phi - New Proposal - ' + u.emails[0].address, 
+      sendEmail(adminEmail,
+        'Omega Phi - New Proposal - ' + u.emails[0].address,
         'User: ' + u.profile.firstName + ' ' + u.profile.lastName + ' - ' + u.emails[0].address + '\n' +
         'Proposal: ' + JSON.stringify(obj)
       )
@@ -140,12 +160,7 @@ console.log('updateRelation: ' + JSON.stringify(obj))
 
     var prop = Subject2.findOne(id)
     if(prop) {
-      // replace in original db with new author
-      Subject.upsert({uuid: prop.uuid, lang: prop.lang}, {$set: {uuid: prop.uuid, lang: prop.lang, subject: prop.subject, upd: prop.createdAt, author: prop.author}})
-      var setc = {uuid: prop.uuid, upd: prop.createdAt}
-      if(prop.lang == 'unit')
-        setc.type = 3;
-      Concept.upsert({uuid: prop.uuid}, {$set: setc})
+      updateSubject(prop);
       // set proposal as accepted
       Subject2.update({_id: id}, {$set: {accepted: true}})
     }
@@ -153,21 +168,15 @@ console.log('updateRelation: ' + JSON.stringify(obj))
       prop = Relation2.findOne(id)
       if(!prop) return
 
-      Concept.upsert({uuid: prop.uuid1}, {$set: {uuid: prop.uuid1, upd: prop.createdAt}})
-
       if(!prop.remove) {
-        Relation.insert(prop)
-        if(prop.relation == 1)
-          Concept.update({uuid: prop.uuid2}, {$set: {type: 1}})
-        else if(prop.relation == 15)
-          Concept.update({uuid: prop.uuid1}, {$set: {solver: true}})
+        updateRelation(prop);
       }
-      else
-        Relation.remove({uuid1: prop.uuid1, uuid2: prop.uuid2, relation: prop.relation})
-      
+      else {
+        removeRelation(prop);
+      }
 
       // set proposal as accepted
-      Relation2.update({_id: id}, {$set: {accepted: true}})      
+      Relation2.update({_id: id}, {$set: {accepted: true}})
     }
     // rate user
     Meteor.users.update({'emails.address': prop.author}, {$inc: {'profile.rating': 1}})
@@ -190,4 +199,30 @@ console.log('updateRelation: ' + JSON.stringify(obj))
     // rate user
     Meteor.users.update({'emails.address': prop.author}, {$inc: {'profile.rating': -1}})
   }
-})
+});
+
+let updateSubject = (obj) => {
+  Subject.upsert({uuid: obj.uuid, lang: obj.lang}, {$set: {uuid: obj.uuid, lang: obj.lang, subject: obj.subject, author: obj.author}});
+
+  var setc = {
+    uuid: obj.uuid
+  };
+  if(obj.lang == 'unit')
+    setc.type = 3;
+  Concept.upsert({uuid: obj.uuid}, {$set: setc});
+};
+
+let updateRelation = (obj) => {
+  Relation.insert(obj);
+  if(obj.relation == 1)
+    Concept.update({uuid: obj.uuid2}, {$set: {type: 1}});
+  else if(obj.relation == 15)
+    Concept.update({uuid: obj.uuid1}, {$set: {solver: true}});
+
+  Concept.upsert({uuid: obj.uuid1}, {$set: {uuid: obj.uuid1}});
+};
+
+let removeRelation = (obj) => {
+  Relation.remove({uuid1: obj.uuid1, uuid2: obj.uuid2, relation: obj.relation});
+  Concept.upsert({uuid: obj.uuid1}, {$set: {uuid: obj.uuid1}});
+};
