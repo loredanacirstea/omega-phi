@@ -114,13 +114,14 @@ Template.formulaDetails.helpers({
         var mfr = Subject.findOne({uuid: r.uuid1, lang: 'mfr'})
         var msy = Subject.findOne({uuid: r.uuid1, lang: 'msy'})
         var kids = Relation.findOne({uuid2: r.uuid1, relation: 1})
-        if((!msy && kids) || (msy && mfr)) {
+        // Show subjects only if they are leafs (have formulas) or they are categories with children
+          //if((!msy && kids) || (msy && mfr)) {
           obj = Subject.findOne({uuid: r.uuid1, lang: lang}) || {}
           obj.vars = Relation.findOne({uuid1: r.uuid1, relation: 15})
           obj.msy = msy
           obj.mfr = mfr
           fs.push(obj)
-        }
+        //}
       }
     })
     return fs
