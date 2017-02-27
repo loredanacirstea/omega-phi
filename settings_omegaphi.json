@@ -17,6 +17,8 @@
       "win32.installer": "/download/win/OmegaPhiWin.exe",
       "darwin": "/download/osx/OmegaPhiOSX.zip"
     }
+  },
+  "public": {
+    "app": "omegaphi"
   }
 }
- 

@@ -1,4 +1,4 @@
-App.info({
+/*App.info({
   id: 'ro.oroboro.omeganeurals',
   name: 'Omega Neurals',
   version: "0.2.3",
@@ -25,3 +25,4 @@ App.icons({
 // App.setPreference('BackgroundColor', '0xff0000ff');
 App.setPreference('HideKeyboardFormAccessoryBar', true);
 App.setPreference('Orientation', 'all', 'ios');
+*/

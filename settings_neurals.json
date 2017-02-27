@@ -1,0 +1,24 @@
+{
+  "electron": {
+    "name": "Neurals",
+    "icon": {
+      "darwin": "public/electron-icons/neurals.icns",
+      "win32": "public/electron-icons/neurals.ico"
+    },
+    "version": "0.1",
+    "description": "Neural network formulas - browsing, searching, problem solver",
+    "rootUrl": "http://orobo.go.ro:5500",
+    "height": 768,
+    "width": 1024,
+    "frame": true,
+    "title-bar-style": "hidden",
+    "resizable": true,
+    "downloadUrls": {
+      "win32.installer": "/download/win/NeuralsWin.exe",
+      "darwin": "/download/osx/NeuralsOSX.zip"
+    }
+  },
+  "public": {
+    "app": "neurals"
+  }
+}
